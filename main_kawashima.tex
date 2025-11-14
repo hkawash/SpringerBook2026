@@ -453,22 +453,22 @@ Applying the model in Eq.~\eqref{eq:discrete_with_stimulus_model} to the data ca
 
 To determine whether a group of fish is exhibiting schooling behavior, various indices have been proposed. For example, polarization~\cite{vicsekNovelTypePhase1995,couzinCollectiveMemorySpatial2002}, $\frac{1}{N}\|\sum_i \tilde{\bm{v}}_i\|$, aggregates the directions of individuals to quantify the degree of their directional alignment, where $\tilde{\bm{x}} = \bm{x} / \|\bm{x}\|$ denotes the normalized vector of $\bm{x}$ similar to Sec.~\ref{sec:base_method}.
 % to show the degree to which they are moving in the same direction. 
-Inter-individual distance (IID) and the nearest-neighbor distance (NND)~\cite{balleriniInteractionRulingAnimala2008} are also commonly used, where $NND = \frac{1}{N} \sum_i \|\bm{p}_i - \bm{p}_{\mathrm{NN}(i)}\|$ with $\mathrm{NN}(i) := \arg\min_k \|\bm{p}_i - \bm{p}_k\|$ the nearest neighbor of individual $i$. However, under conditions where rotational stimuli are presented in a confined tank, as in our experiments, the swimming directions of individuals vary widely, and these indices may not adequately capture the schooling behavior. Therefore, as the baseline index for schooling behavior, we define $NNCor$ as the mean correlation between the velocity of an individual and that of its nearest neighbor: $NNCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}$.
+Inter-individual distance (IID) and the nearest-neighbor distance (NND)~\cite{balleriniInteractionRulingAnimala2008} are also commonly used, where $NND = \frac{1}{N} \sum_i \|\bm{p}_i - \bm{p}_{\mathrm{NN}(i)}\|$ with $\mathrm{NN}(i) := \arg\min_k \|\bm{p}_i - \bm{p}_k\|$ the nearest neighbor of individual $i$. However, under conditions where rotational stimuli are presented in a confined tank, as in our experiments, the swimming directions of individuals vary widely, and these indices may not adequately capture the schooling behavior. Therefore, as the baseline index for schooling behavior, we employ a widely used local directional alignment metric, hereafter termed $NNCorr$, defined as the mean correlation between each individual's velocity and that of its nearest neighbor: $\mathrm{NNCorr} = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}$.
 % \begin{equation}
-% NNCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}.
+% NNCorr = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}.
 % \end{equation} 
 % Specifically, we calculate the cosine similarity between velocity vector of each individual and that of its nearest neighbor.
-Because this index relies only on the nearest neighbor, it effectively captures local directional alignment.
-Furthermore, to quantify the strength of the response to the external stimulus, we also define $StimCor$ as the mean correlation between the velocity of an individual and the clockwise rotational-direction vector at the position of $i$ with $\bm{p}_\mathrm{c}$ the center of rotation: $StimCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i$, 
+% Because this index relies only on the nearest neighbor, it effectively captures local directional alignment.
+Furthermore, to quantify the strength of the response to the external stimulus, we also define $StimCorr$ as the mean correlation between the velocity of an individual and the clockwise rotational-direction vector at the position of $i$ with $\bm{p}_\mathrm{c}$ the center of rotation: $\mathrm{StimCorr} = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i$, 
 % \begin{equation}
-% StimCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i, 
+% StimCorr = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i, 
 % \end{equation}
 where $\bm{r}_i$ is a unit vector in the clockwise rotational direction at $\bm{p}_i$ around $\bm{p}_\mathrm{c}$~\footnote{Since we use a left-handed coordinate system, which is standard in image coordinates, $\bm{r}_i = R (\bm{p}_i - \bm{p}_c)$ with $R$ the rotation matrix: $R (x, y)^\top = (-y, x)^\top$.}.
 %  = R (\bm{p}_i - \bm{p}_c)$ with $R$ the rotation matrix: $R (x, y)^\top = (-y, x)^\top$.
 
-Figure~\ref{fig:nn_velocity_correlation} shows an example of the NNCor and StimCor indices under the presentation of the rotational stimulus (S3: fast rotation).
+Figure~\ref{fig:nn_velocity_correlation} shows an example of the NNCorr and StimCorr indices under the presentation of the rotational stimulus (S3: fast rotation).
 Both indices exhibit high values, particularly between frames 200 and 700, corresponding to the period when all individuals were engaged in rotational schooling (Fig.~\ref{fig:fish_trajectory_0-900}).
-However, the difference between the NNCor and StimCor values is small, and the relative contribution of internal coordination and external stimuli remain unclear. In the following paragraph, we introduce schooling indices derived from the extended interaction model to directly analyze these contributions.
+However, the difference between the NNCorr and StimCorr values is small, and the relative contribution of internal coordination and external stimuli remain unclear. In the following paragraph, we introduce schooling indices derived from the extended interaction model to directly analyze these contributions.
 % TODO: ここはもう少し検討
 
 % 群泳状態にあるか否かの古典的な指標には、polarity のように各個体の方向を集約してどの程度同一方向に移動しているかを示す指標や、個体間距離の平均値 inter-individual distance、もしくは最近傍個体との距離を調べる nearest-neighbor distance など様々なものが提案されている。しかし、本研究で用いるような限られたサイズの水槽において回転刺激を提示する状況下では、水槽内の個体の方向が様々であり、全個体を集約することや、距離の指標を用いた場合は、適切に群泳状態を捉えられない可能性がある。そこで、本研究では、個体の速度と最近傍個体の速度および回転方向との相関を群泳の指標として用いる。具体的には、各個体の速度ベクトルとその最近傍個体の速度方向との内積を計算し、その平均値を群泳指標とする。この指標は、最近傍個体のみを用いるため、局所的な方向の一致をとらえやすい。さらに、刺激への反応の強さを測るために、各個体の速度ベクトルと回転方向ベクトルも用いる。Fig.~\ref{fig:nn_velocity_correlation}に、回転刺激提示下での群泳指標の例を示す。いずれの指標の値も、特に100フレーム目以降は高い値を取っており、回転刺激に沿って群泳を行っていると推定される。
@@ -507,7 +507,7 @@ Likewise, $S_\mathrm{stim}$ represents the overall responsiveness of the group t
         \vspace{0pt}
         \begin{subfigure}[t]{\linewidth}
             \includegraphics[width=\linewidth]{fig/nn_velocity_correlation_Day2_3_S3_0-900frame_ws60.pdf}
-            \caption{Baseline indices: NNCor and StimCor}
+            \caption{Baseline indices: NNCorr and StimCorr}
             \label{fig:nn_velocity_correlation}
         \end{subfigure}
         \begin{subfigure}[t]{\linewidth}
