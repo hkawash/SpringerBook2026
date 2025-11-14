@@ -1,0 +1,124 @@
+\begin{thebibliography}{10}
+
+\bibitem{balleriniInteractionRulingAnimala2008}
+M.~Ballerini, N.~Cabibbo, R.~Candelier, A.~Cavagna, E.~Cisbani, V.~Lecomte, A.~Orlandi, G.~Parisi, A.~Procaccini, and M.~Viale.
+\newblock Interaction {{Ruling Animal Collective Behaviour Depends}} on {{Topological}} rather than {{Metric Distance}}: {{Evidence}} from a {{Field Study}}.
+\newblock {\em Proceedings of the National Academy of Sciences}, 105(4):1232--1237, 2008.
+
+\bibitem{bolstadCausalNetworkInference2011}
+Andrew Bolstad, Barry Van~Veen, and Robert Nowak.
+\newblock Causal network inference via group sparse regularization.
+\newblock {\em IEEE Transactions on Signal Processing}, 59(6):2628--2641, June 2011.
+
+\bibitem{Couzin2005}
+Iain~D Couzin, Jens Krause, Nigel~R Franks, and Simon a~Levin.
+\newblock Effective leadership and decision-making in animal groups on the move.
+\newblock {\em Nature}, 433(7025):513--6, February 2005.
+
+\bibitem{couzinCollectiveMemorySpatial2002}
+Iain~D. Couzin, Jens Krause, Richard James, Graeme~D. Ruxton, and Nigel~R. Franks.
+\newblock Collective memory and spatial sorting in animal groups.
+\newblock {\em Journal of Theoretical Biology}, 218(1):1--11, 2002.
+
+\bibitem{egerstedtInteractingNetworksMobile2014a}
+Magnus Egerstedt, Jean-Pierre {de~la Croix}, Hiroaki Kawashima, and Peter Kingston.
+\newblock Interacting with networks of mobile agents.
+\newblock In Peter Benner, Rolf Findeisen, Dietrich Flockerzi, Udo Reichl, and Kai Sundmacher, editors, {\em Large-{{Scale Networks}} in {{Engineering}} and {{Life Sciences}}}, pages 199--224. {Springer International Publishing}, {Cham}, 2014.
+
+\bibitem{fujiiLearningInteractionRules2021}
+Keisuke Fujii, Naoya Takeishi, Kazushi Tsutsui, Emyo Fujioka, Nozomi Nishiumi, Ryoya Tanaka, Mika Fukushiro, Kaoru Ide, Hiroyoshi Kohno, Ken Yoda, Susumu Takahashi, Shizuko Hiryu, and Yoshinobu Kawahara.
+\newblock Learning interaction rules from multi-animal trajectories via augmented behavioral models.
+\newblock {\em Advances in Neural Information Processing Systems}, 2021.
+
+\bibitem{helbingSocialForceModel1995}
+Dirk Helbing and Peter Molnar.
+\newblock Social force model for pedestrian dynamics.
+\newblock {\em Physical Review E}, 51(5):4282--4286, May 1995.
+
+\bibitem{yolo11_ultralytics}
+Glenn Jocher and Jing Qiu.
+\newblock {Ultralytics YOLO11}.
+\newblock \url{https://github.com/ultralytics/ultralytics}, 2024.
+\newblock Version 11.0.0, AGPL-3.0 License.
+
+\bibitem{Kawashima23}
+Hiroaki Kawashima.
+\newblock Estimating networks of interaction in fish schools with a minimal model.
+\newblock {\em BiRD (PerCom2023 Workshop)}, 2023.
+
+\bibitem{kawashimaManipulabilityLeaderFollower2014}
+Hiroaki Kawashima and Magnus Egerstedt.
+\newblock Manipulability of leader\textendash follower networks with the rigid-link approximation.
+\newblock {\em Automatica}, 50(3):695--706, 2014.
+
+\bibitem{Kawashima14}
+Hiroaki Kawashima, Yu~Kanechika, and Takashi Matsuyama.
+\newblock Camera-display system for the interaction analysis of live fish vs fish-like graphics.
+\newblock {\em Meeting on Image Recognition and Understanding}, (i):1--4, 2014.
+
+\bibitem{KawashimaShibayama2026}
+Hiroaki Kawashima and Takato Shibayama.
+\newblock Guiding fish schools using the reinforcement learning of multiple pseudo individuals (tentative).
+\newblock {\em in preparation (we will upload preprint soon)}.
+
+\bibitem{KawashimaAROB2026}
+Hiroaki Kawashima, Saeko Takizawa, and Raj~Rajeshwar Malinda.
+\newblock Modeling and analysis of fish interaction networks under projected visual stimuli (tentative).
+\newblock {\em in preparation (we will submit soon)}, 2026.
+
+\bibitem{Raj2026}
+Raj~Rajeshwar Malinda, Saeko Takizawa, Akiyuki Koyama, Takayuki Niizato, Hitoshi Habe, and Hiroaki Kawashima.
+\newblock Speed-modulated visual stimuli drive collective dynamics in fish (tentative).
+\newblock {\em in preparation (we will upload preprint soon)}.
+
+\bibitem{marcinkevicsInterpretableModelsGranger2021}
+Ri{\v c}ards Marcinkevi{\v c}s and Julia~E. Vogt.
+\newblock Interpretable models for {{Granger}} causality using self-explaining neural networks.
+\newblock {\em International Conference on Learning Representations}, January 2021.
+
+\bibitem{mesbahiGraphTheoreticMethods2010}
+Mehran Mesbahi and Magnus Egerstedt.
+\newblock {\em Graph Theoretic Methods in Multiagent Networks}.
+\newblock {Princeton University Press}, 2010.
+
+\bibitem{Parrish2002}
+Julia~K. Parrish, Steven~V. Viscido, and Daniel Gr{\"u}nbaum.
+\newblock Self-organized fish schools: {{An}} examination of emergent properties.
+\newblock {\em Biological Bulletin}, 202(3):296--305, 2002.
+
+\bibitem{Partridge1982}
+B~L Partridge.
+\newblock The structure and function of fish schools.
+\newblock {\em Scientific American}, 246(6):114--123, 1982.
+
+\bibitem{rahmaniControllabilityMultiAgentSystems2009}
+Amirreza Rahmani, Meng Ji, Mehran Mesbahi, and Magnus Egerstedt.
+\newblock Controllability of multi-agent systems from a graph-theoretic perspective.
+\newblock {\em SIAM Journal on Control and Optimization}, 48(1):162--186, 2009.
+
+\bibitem{rosenthalRevealingHiddenNetworks2015}
+Sara~Brin Rosenthal, Colin~R. Twomey, Andrew~T. Hartnett, Hai~Shan Wu, and Iain~D. Couzin.
+\newblock Revealing the hidden networks of interaction in mobile animal groups allows prediction of complex behavioral contagion.
+\newblock {\em Proceedings of the National Academy of Sciences}, 112(15):4690--4695, April 2015.
+
+\bibitem{Rodrigo17}
+Rodrigo Verschae, Hiroaki Kawashima, and Shohei Nobuhara.
+\newblock A multi-camera system for underwater real-time 3d fish detection and tracking.
+\newblock {\em IEEE OCEANS}, 2017.
+
+\bibitem{vicsekNovelTypePhase1995}
+Tamas Vicsek, Andras Czirok, Eshel {Ben-Jacob}, Inon Cohen, and Ofer Sochet.
+\newblock Novel type of phase transition in a system of self-driven particles.
+\newblock {\em Physical Review Letters}, 75(6):1226--1229, August 1995.
+
+\bibitem{Vicsek2012}
+Tamas Vicsek and Anna Zafeiris.
+\newblock Collective motion.
+\newblock {\em Physics Reports}, 517(3-4):71--140, 2012.
+
+\bibitem{THU-MIGyolov10}
+Ao~Wang, Hui Chen, Lihao Liu, and et~al.
+\newblock Yolov10: Real-time end-to-end object detection.
+\newblock {\em arXiv preprint arXiv:2405.14458}, 2024.
+
+\end{thebibliography}

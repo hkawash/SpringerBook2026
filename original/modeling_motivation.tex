@@ -1,0 +1,41 @@
+% 瞬時的な群れのconfigurationから相互作用を定義する手法
+Various network estimation methods exist depending on how the interaction among individuals is defined. Commonly used criteria are based on the instantaneous configuration of individuals (e.g., their relative position and orientation). In particular, whether or not other animals is in the field of view is often used (e.g., \cite{rosenthalRevealingHiddenNetworks2015}).
+% Critera with instantaneous configuration are common in the literature, which utilizes the distance between individuals is close enough, the relative velocity is small, the angles are close, or the animals are in the field of view.
+However, if the goal is to predict group behavior in the future, it is more desirable to directly estimate the influence of each individual on others. In such predictive criteria, interactions among individuals are defined based on the contribution degree to predicting each individual’s future movement from other individuals. 
+
+% Predictive criteria だと何が必要か　
+Compared to the intuitive definition of the configuration-based criteria, the difficulty of the predictive criteria arises from the fact that they require the inference of unobservable contribution degrees from observable time-series data. That is, an appropriate model should be employed depending on the problem settings. Vector autoregressive models~\cite{bolstadCausalNetworkInference2011} and neural networks with regularization~\cite{marcinkevicsInterpretableModelsGranger2021,fujiiLearningInteractionRules2021} are examples of such models. However, in general, introducing complex models sacrifices intuitive interpretation.
+
+% 本論文でやりたいこと
+Our motivation for this study is to utilize an interpretable model trained from actual data to find appropriate inputs into the group for guiding fish schools. In particular, we are interested in revealing under what circumstances each individual uses what information, namely features of other surrounding individuals. Toward this goal, we expect the two-layer scheme to be practical: The first layer extracts dynamically changing influences among individuals (i.e., interaction network changing in time), and the second layer elucidates the dominant factors (i.e., individuals and their features) that affect the dynamics of such influences.
+As the first step, this paper proposes a method to estimate interaction networks using the simplest possible model.  
+
+The contributions of this paper are three-fold:
+\begin{enumerate}
+    \item We propose a simple linear model based on the \textit{attraction} rule with an additional autonomous term to estimate interaction networks among individuals.
+    % through regression analysis.
+    \item We show that the proposed model can stably conduct a short-term estimation of a dynamically changing network by assuming the sparsity of the network.
+    %by exploiting the sparsity of the interaction network.
+    \item We demonstrate the capability of the proposed method by applying it to both simulated and real data.
+\end{enumerate}
+%Specifically, we build our model based on a well-known attraction term in a collective behavior model where the velocity of each individual is assumed to be estimated from relative position of other individuals. By adding an autonomous term to the model and exploiting the sparse estimation of the coefficients of the influence of the other individuals, we successfully find individuals that have larger influence in a group.
+
+%that uses only information on relative positions.
+% Our goal is to reveal which features 
+% In this paper, we propose a simple linear model to estimate the interaction network among individuals. The model is 
+% based on a well-known collective behavior model~\cite{Partridge1982} where the velocity of each individual is estimated from the relative position of other individuals. By adding an autonomous term to the model and exploiting the sparse estimation of the coefficients of the influence of the other individuals, we successfully find individuals that have larger influence in a group. The proposed method is evaluated on a real-world dataset of fish schooling, and the results show that the proposed method can identify individuals that have larger influence in a group.
+
+
+\section{Related Work}
+
+% \subsection{Collective-Behavior Models}
+\noindent{\bf Fish schooling models.}
+% いろいろな分野でのモデリング
+The modeling of spacial dynamics of animal groups, especially fish schools and bird flocks, has been widely studied since the 80-90s in various fields, including biology~\cite{AokiIchiro1982,Partridge1982}, physics~\cite{vicsekNovelTypePhase1995,Vicsek2012}, and computer science~\cite{reynoldsFlocksHerdsSchools1987}. In particular, the Boid-like model~\cite{reynoldsFlocksHerdsSchools1987} and its extensions are well known, where they combine three simple rules of attraction, collision avoidance, and alignment of orientations, and are often used to analyze collective behaviors~\cite{Huth1994,couzinCollectiveMemorySpatial2002,Couzin2005}. Our model utilizes the attraction rule, the most fundamental rule for schooling behavior, and extends it with an additional autonomous term, as described later.
+% In particular, the behavior of fish schools and bird flocks attracts researchers' interest because of their complex and fascinating dynamics. 
+
+% myersConvexityLatentSocial2010,
+
+% \subsection{Causality-Network Estimation}
+\noindent{\bf Causality-network estimation.}
+As the causality network (or graph) is a key concept in causal inference, there exist many methods that estimate the network from time-series data~\cite{bolstadCausalNetworkInference2011,marcinkevicsInterpretableModelsGranger2021,fujiiLearningInteractionRules2021}. Vector auto-regressive models are one of the most popular methods~\cite{bolstadCausalNetworkInference2011}, where the network is estimated as the coefficients of the linear model. Furthermore, for data with nonlinear dynamics, neural network models for exploring Granger-causal effects have been proposed~\cite{marcinkevicsInterpretableModelsGranger2021,fujiiLearningInteractionRules2021}. Since our motivation is to clarify the capability of a minimal model, we focus on a simplified linear vector auto-regressive model dedicated to representing collective behaviors.

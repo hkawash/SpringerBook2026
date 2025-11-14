@@ -1,0 +1,81 @@
+\subsection{Experiments by Incorporating Alignment Term}\label{sec:attraction_alignment_model}
+
+\subsubsection{Model with Alignment Term}
+
+While the original model is simple but too naive in that it only considers the attraction rule, it can be naturally extended to model other behaviors, such as the alignment term. 
+% In addition to the attraction term, we can extend the model to incorporate other behavioral rules, such as alignment and repulsion. For example, we can introduce the alignment term as follows:
+
+\begin{equation}
+    \bm{v}_{i,t+\tau_d}
+    = \sum_{j\ne i} w_{ij,k}^\text{att}\,\tilde{\bm{p}}_{ij,t}
+      + \sum_{j\ne i} w_{ij,k}^\text{ali}\,\tilde{\bm{v}}_{j,t}
+      + \bm{d}_{i,k}
+      + \bm{\epsilon}_{i,t},
+    \qquad
+    \bm{d}_{i,k}=w_{ii,k}\,\tilde{\bm{d}}_{i,k},\;
+    \|\tilde{\bm{d}}_{i,k}\|=1,
+    \label{eq:discrete_time_model}
+\end{equation}
+where $\tilde{\bm{v}}_{j,t}=\bm{v}_{j,t}/\|\bm{v}_{j,t}\|$ is the normalized velocity of individual $j$, and $w_{ij,k}^\text{att}$ and $w_{ij,k}^\text{ali}$ are the weights of attraction and alignment, respectively. 
+The estimation procedure is the same as described in Sec.~\ref{sec:estimation}, except that the design matrix $X_t$ is modified to include the alignment term.
+
+\subsubsection{Demonstration on Real Fish School Data} 
+
+% \paragraph{Setting.} 
+\noindent{\bf Settings.}
+Ten rummy-nose tetras (\textit{Hemigrammus rhodostomus}) of approximately 3\,cm were installed in an acrylic flat fish tank (30\,cm-square bases with 10\,cm height). The species was chosen because of the tight schooling behavior. One side of the tank was transparent, and a monitor was attached to present visual stimuli on its screen.
+In addition, a color camera (60\,fps) was installed on the top of the tank to record the 2D trajectories of fish.
+
+% \paragraph{Multi-object tracking.} 
+\noindent{\bf Multi-object tracking~\cite{kawashimaCameraDisplaySystemInteractionAnalysis2014}.} 
+After the background subtraction, each frame was converted to a binary image.
+The centroid of each fish was computed by fitting the Gaussian mixture model to the randomly sampled points from the foreground. For the fitting, we used the expectation-maximization (EM) algorithm with some extension, such as removing far points from distributions and imposing a constraint on the covariance matrix. That is, each fish was assumed to be an ellipse with a certain range of size and shape. The trajectories of the fish were obtained by associating the centroid of each fish in consecutive frames. This association was done by initializing the EM algorithm using the linearly extrapolated position from the past tracked positions as the initial mean of the Gaussian. Switching of identities was rare and manually corrected.
+
+\noindent{\bf Visual stimuli and fish response.} 
+As for the visual stimuli, we used an animation where a black rectangle on a white background became gradually larger. This stimulus was used to induce the fish group a schooling behavior. 
+The experiment of presenting the stimulus and observing fish response was repeated, and one of the obtained sequences, which included large enough fish movements, was used for our analysis. Fig.~\ref{fig:fish_trajectory} shows the trajectory of the fish group. As shown in Fig.~\ref{fig:traj_8100_8200}, the fish group was first aggregating (i.e., the individuals were close to each other, but their orientation was not aligned). The stimulus started to be shown about frame 8050, and the size of the rectangle was maximized around frame 8250, inducing the group a schooling behavior (i.e., the individuals' orientation was aligned, and they moved toward the same direction) as shown in Figs.~\ref{fig:traj_8200_8300} and \ref{fig:traj_8300_8400}.
+
+
+\noindent{\bf Interaction-network estimation.} 
+A moving average filter with the size of nine frames (150\,msec) was applied to the results of the multiple-object tracing to obtain smoothed trajectories. Then, the velocity was simply computed by the frame difference. We used the analysis interval from frame 8100 to 8400 by considering frame 8100 as $t=0$. The interaction-network estimation was performed using the delay parameter $\tau_d = 6$ in \eqref{eq:discrete_time_model}. The weights $w_{ij, k}$ and $\bm{d}_{i,k}$ were estimated for each analysis interval $k$, with the window size $L= 10$ frames (166.7 msec). The window was shifted every frame; therefore, $k = b_k = t$ in this setting. Fig.~\ref{fig:weight_matrices} shows examples of the estimated weights of every ten frames.
+% , i.e., $b_k = 0, 10, ...$. 
+The diagonal elements represent the weight of the autonomous term: $w_{ii, k} = ||\bm{d}_{i,k}||$. We can see that fish \#3, \#4, and \#10, which led the group, have larger weights on their autonomous term, especially from frame 8280. Among those three, we can also see that fish \#3 influenced the others largely (i.e., large $w_{j3}$), while the influence from the others to \#3 (i.e., $w_{3j}$) was small. This result is consistent with the fact that \#3 led the schooling behavior of the group.
+
+
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{fig/network_comparison.png}
+\caption{Estimated networks from an attraction-only model and an attraction+alignment model.}
+\label{fig:network_comparison}
+\end{figure}
+
+
+\noindent{\bf Visualization of the estimated network.}
+Fig.~\ref{fig:fish_network} shows the visualization of the estimated interaction networks in every 20 frames. The black arrows represent $\bm{v}_{i,t}$, the velocity of each individual. The width of the blue arrows from $i$ to $j$ depicts $w_{ij}$, i.e., the strength individual $i$ is affected by individual $j$. The color of the circles represents the individuals' ID, and each size represents the influence on the others.
+We can see that \#3 started to lead the group from Fig.~\ref{fig:net_180}, and later \#3, \#4, and \#10 led the group (e.g., Figs.~\ref{fig:net_200}, \ref{fig:net_220}, and \ref{fig:net_240}).
+
+% orig: 000 -> 284
+% 000 -> 220 : 000, 020, 040, ...
+
+\begin{figure}[tbp]
+\centering
+\subfloat[Attraction-term network]{
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0120.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0140.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0160.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0180.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0200.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0220.png}
+\label{fig:net_att}} \\
+\subfloat[Alignment-term network]{
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0120.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0140.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0160.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0180.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0200.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0220.png}
+\label{fig:net_ali}}
+\caption{Visualization of the estimated interaction networks. The strength of the influence is depicted by the width of the blue arrows; $w_{ij} < 0.35$ are not visualized. The size of the circles represents the sum of influence to the other individuals. The black arrows depict the velocity of each individual.}
+\label{fig:fish_network}
+\end{figure}

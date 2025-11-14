@@ -1,0 +1,129 @@
+\subsection{Interaction-Network Estimation}
+
+We propose a method to estimate a dynamically changing interaction network from the trajectory data of individuals in a group. The proposed method is based on the following two assumptions. First, the velocity of each individual is determined by not only the influence of other individuals but the individual's preferred (desired) direction~\cite{helbingSocialForceModel1995,Couzin2005}, which is unknown in the data. 
+Second, each individual is influenced by a limited number of other individuals. That is, not all individuals are equally important for each individual to determine the movement. We introduce a minimal model based on the first assumption, whose parameters can be estimated using the second assumption.
+
+\subsubsection{Base Model}\label{sec:model}
+
+Let $\bm{p}_i(t) \in \mathbb{R}^d \quad (i=1,...,N)$ be the position of the $i$-th individual at time $t$, where $N$ is the number of individuals in the group and assumed to be constant. While we use 2D positions in the experiments by assuming the movement of each individual is planar (i.e., $d=2$), the position can be 3D (i.e., $d=3$) in more general settings. 
+Let us denote the individual $i$'s velocity at time $t$ as $\bm{v}_i(t) = \frac{d}{dt}\bm{p}_i(t) \in \mathbb{R}^d$.
+We here assume that the individual $i$'s velocity at time $t + \tau$ is given by the following equation:
+\begin{equation}
+    \bm{v}_i(t + \tau) = \sum_{j=1, j\neq i}^N w_{ij}(t) \frac{\bm{p}_j(t) - \bm{p}_i(t)}{||\bm{p}_j(t) - \bm{p}_i(t)||} + \bm{d}_i(t) + \bm{\epsilon}_i(t),
+    \label{eq:continuous_time_model}
+\end{equation}
+where the first term is the attraction term, the second term ($\bm{d}_i(t) \in \mathbb{R}^d$) is the \textit{autonomous} term, and the third term ($\bm{\epsilon}_i(t) \in \mathbb{R}^d$) is the noise term.
+
+Based on the above model, individual $i$'s velocity is assumed to be determined with delay $\tau$ by the direction to the other individuals (in the attraction term) and the individual $i$'s preferred direction (in the autonomous term). The remaining component that is not explained by these two terms is considered to be noise in this minimal model.
+
+% repel は by ? from ?
+By the attraction term, we assume that the individual $i$ is not repelled but only attracted by the other individuals $j \in \{1, ..., N\} \backslash \{i\}$ with the weight (coefficient) $w_{ij} \geq 0$. The weight represents how strong individual $j$ affects individual $i$. While it is possible in this model that all the other $N - 1$ individuals affect the individual $i$, later, we assume the sparsity constraint on the weights; that is, the number of individuals that affect one individual is limited. The weights corresponding to the individuals that do not affect individual $i$ are assumed to be zero (i.e., $w_{ij} = 0$). 
+
+The autonomous term $\bm{d}_i(t)$ can be further rewritten as
+\begin{equation}
+    % \bm{d}_i(t) = w_{ii}(t) \tilde{\bm{d}}_i(t) = w_{ii}(t) \frac{\bm{c}_i(t) - \bm{p}_i(t)}{||\bm{c}_i(t) - \bm{p}_i(t)||},
+    \bm{d}_i(t) = w_{ii}(t) \tilde{\bm{d}}_i(t),
+    \label{eq:continuous_time_autonomous}
+\end{equation}
+where $\tilde{\bm{d}}_i(t)$ is a unit vector representing the preferred direction of individual $i$.
+% , $\bm{c}_i(t)$ is the individual $i$'s preferred position. 
+The weight $w_{ii} (\geq 0)$ represents the preference strength on the direction $\tilde{\bm{d}}_i(t)$, where $w_{ii}$ is assumed to be zero if the individual $i$ does not have a preferred direction.
+
+\subsubsection{Formulation for Short-Term Analysis}\label{sec:sampled_model}
+
+% For the simulated data, we use model \eqref{eq:discrete_time_model} to generate trajectories of individuals. In this setting, we have the ground truth of the interaction network, and thus we can evaluate the estimation performance quantitatively. For the real data, we use the trajectories of fish in a tank to demonstrate how the proposed method can be used to capture the change of the interaction network during the process when a schooling behavior emerges. We also try to characterize each individual's role in the interaction network.
+
+Figure~\ref{fig:estimation_overview} shows the overview of the proposed method. 
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{fig/estimation_overview.png}
+\caption{Overview of the Dynamic Network Estimation (Example on a Simulated trajectory).}
+\label{fig:estimation_overview}
+\end{figure}
+
+In practice, the position and velocity of each individual are given as a sequence of discrete data points. Note that the weights $w_{ij}$ and the autonomous term $\bm{d}_i$ cannot be directly observed and need to be estimated from the observed data. Therefore, we introduce two types of time sampling with different periods: one for observation and the other for short-term analysis.
+
+Let $T_o$ be the sampling period of observation. The position and velocity of each individual are observed at the time points $t = 0, T_o, 2T_o,...$. By abuse of notation, we denote these time points as $t = 0, 1, 2, ...$ in what follows. Let $T_a$ be the period of window-based short-term analysis to estimate $w_{ij}$ and $\bm{d}_i$. The weights and the autonomous term are computed with the period $T_a \geq T_o$. We use the notation $k$ to denote the index of time windows for the short-term analysis.
+% time points of short-term analysis.
+%at the time points $t = 0, T_a, 2T_a,...$.
+% For the observation of the position, we 
+
+Using the time-delay parameter $\tau_d$ satisfying $\tau = \tau_d T_o$, we can rewrite the continuous-time model \eqref{eq:continuous_time_model} as
+\begin{equation}
+    \bm{v}_{i, t+\tau_d} = \sum_{j=1, j\neq i}^N w_{ij, k} \, \frac{\bm{p}_{j, t} - \bm{p}_{i,t}}{||\bm{p}_{j,t} - \bm{p}_{i,t}||} + \bm{d}_{i,k} + \bm{\epsilon}_{i,t},
+    \label{eq:discrete_time_model}
+\end{equation}
+where $\bm{d}_{i,k} = w_{ii,k} \tilde{\bm{d}}_{i,k}$ and $||\tilde{\bm{d}}_{i,k}|| = 1$. Note that the weights $w_{ij, k}$ and the preferred direction $\bm{d}_{i,k}$ are assumed to be constant within each time window of short-term analysis. 
+% Here, time point $k$ can be considered as the index of the time windows. 
+
+To simplify the notation, we use $\bm{p}_{ij, t} = \bm{p}_{j, t} - \bm{p}_{i,t}$ and $\tilde{\bm{p}}_{ij, t} = \frac{\bm{p}_{ij, t}}{||\bm{p}_{ij, t}||}$ for the relative position of individual $j$ from individual $i$ and its normalized vector, respectively. Then, the discrete-time model \eqref{eq:discrete_time_model} becomes
+\begin{equation}
+    \bm{v}_{i, t+\tau_d} = \sum_{j=1, j\neq i}^N w_{ij, k} \, \tilde{\bm{p}}_{i,t}  + \bm{d}_{i,k} + \bm{\epsilon}_{i,t}.
+    \label{eq:discrete_time_model2}
+\end{equation} 
+
+% Window内では自律項は(positionに依らず)常に同じ方向... 書いておいた方がいい?
+
+\subsubsection{Sparse Estimation of Coefficients}\label{sec:estimation}
+
+Through the estimation of $w_{ij, k} \, (j\neq i)$ and $\bm{d}_{i,k}$, 
+we try to infer what affected the individual $i$'s movement among the other individuals' influence in the attraction term and the autonomous term. 
+Let $L$ be the window size of the short-term analysis. That is, we suppose each analysis interval has $L$ time points of position $\bm{p}_{i, t} \, (i=1,...,N)$ and velocity $\bm{v}_{i, t+\tau_d}$, where $t=b_k,...,e_k (= b_k + L - 1)$. As $\tilde{\bm{p}}_{ij, t}$ can be directly computed from $\bm{p}_{i,t}$ and $\bm{p}_{j,t} \, (j \in \{1, ..., N\} \backslash \{i\})$, we formulate the estimation problem as the following simple regression analysis:
+\begin{equation}
+    \min_{\{w_{ij, k}\}, \bm{d}_{i,k}} J_{i,k}  \qquad \text{subject to} \quad w_{ij, k} \geq 0
+\end{equation}
+%   \\ 
+where $J_{i,k} = \sum_{t=b_k}^{e_k} \left\|\bm{\epsilon}_{i,t}\right\|^2_2$, i.e.,
+\begin{equation}
+    \begin{aligned}
+        J_{i,k} = \sum_{t=b_k}^{e_k} \left\| \bm{v}_{i, t+\tau_d} - \left(\sum_{j=1, j\neq i}^N w_{ij, k} \, \tilde{\bm{p}}_{ij, t} + \bm{d}_{i,k} \right)\right\|^2_2 \\
+    \end{aligned}
+    \label{eq:objective_function}
+\end{equation}
+
+We here impose the $\ell_1$ sparsity penalty on the parameters $w_{ij, k} \, (j\neq i)$ and $\bm{d}_{i,k}$ to have interpretable results. In the implementation, we also use the $\ell_2$ regularizer to have stable results even when the analysis window size $L$ is small, or the data are highly correlated. As the model is linear, the estimation can be done in a stable manner using simple regression techniques. 
+
+Specifically, since we can rewrite the prediction in the parenthesis in \eqref{eq:objective_function} as
+\begin{equation}
+    \begin{bmatrix}
+        \tilde{\bm{p}}_{i1, t} & \cdots & \tilde{\bm{p}}_{iN, t} & I_d
+    \end{bmatrix}
+    \begin{bmatrix}
+        w_{i1, k} \\
+        \vdots \\
+        w_{iN, k} \\
+        \bm{d}_{i,k},
+    \end{bmatrix}
+    \begin{array}{l}
+    \left.\vphantom{
+        \begin{bmatrix}
+            w_{i1, k} \\
+            \vdots \\
+            w_{iN, k} \\
+        \end{bmatrix}}
+    \right\} N-1\\
+    \left.\vphantom{
+        \begin{bmatrix}
+            \bm{d}_{i,k},
+        \end{bmatrix}}
+    \right\} d \, (=\text{2 or 3})
+    \end{array}
+    ,
+    \label{eq:linear_prediction}
+\end{equation}
+the model parameters $\bm{\theta} = (w_{i1, k}, ..., w_{iN, k}, \bm{d}_{i,k}^\top)^\top$ can be fitted to the data of explanatory variables $X$ and response variables $\bm{y}$ using standard solvers, where
+\begin{equation}
+    X = \begin{bmatrix}
+        \tilde{\bm{p}}_{i1, b_k} & \cdots & \tilde{\bm{p}}_{iN, b_k} & I_d \\
+        \vdots & \ddots & \vdots & \vdots \\
+        \tilde{\bm{p}}_{i1, e_k} & \cdots & \tilde{\bm{p}}_{iN, e_k} & I_d
+    \end{bmatrix}, \,
+    \bm{y} = \begin{bmatrix}
+        \bm{v}_{i, b_k+\tau_d} \\
+        \vdots \\
+        \bm{v}_{i, e_k+\tau_d}
+    \end{bmatrix}.
+\end{equation}
+Note that $X \in \mathbb{R}^{Ld \times (N + d - 1)}$ and, strictly speaking, 
+the window size needs to be $L \geq \lceil (N + d - 1)/d \rceil$ for minimizing $J_{i,k} = \left\|\bm{y} - X \bm{\theta}\right\|_2^2$. However, in practice, we can use a smaller $L$ because of the introduced regularizers.

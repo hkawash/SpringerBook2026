@@ -1,0 +1,870 @@
+%%%%%%%%%%%%%%%%%%%% author.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample root file for your "contribution" to a contributed volume
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%% Springer %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[graybox]{svmult}
+
+% choose options for [] as required from the list
+% in the Reference Guide
+
+\usepackage{type1cm}        % activate if the above 3 fonts are
+                            % not available on your system
+%
+\usepackage{makeidx}         % allows index generation
+\usepackage[dvipdfmx]{graphicx}        % standard LaTeX graphics tool
+                             % when including figure files
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+
+\usepackage{newtxtext}       % 
+\usepackage[varvw]{newtxmath}       % selects Times Roman as basic font
+
+% \usepackage{cite}
+% \usepackage{amsmath,amssymb,amsfonts}
+% \usepackage{algorithmic}
+% \usepackage{textcomp}
+% \usepackage{xcolor}
+\usepackage{bm}
+
+% \usepackage{subfig}
+\usepackage{subcaption}
+% \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+% \usepackage[caption=false,font=footnotesize]{subfig}
+
+% \usepackage[backend=biber,style=numeric,url=true,doi=false,isbn=false]{biblatex}
+% \addbibresource{BioNavi2025.bib}
+
+% \usepackage{hyperref}
+
+% see the list of further useful packages
+% in the Reference Guide
+
+\makeindex             % used for the subject index
+                       % please use the style svind.ist with
+                       % your makeindex program
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% \title*{Modeling Interactions through Intelligence Informatics}
+\title*{Modeling Interactions through Interpretable Network Estimation}
+% Use \titlerunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\author{Hiroaki Kawashima\orcidID{0000-0003-1208-3715}
+ and\\ Raj Rajeshwar Malinda\orcidID{0000-0003-1578-6264}
+}
+
+% Use \authorrunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\institute{Hiroaki Kawashima \at University of Hyogo, Kobe Japan, \email{kawashima@gsis.u-hyogo.ac.jp}
+ \and Raj Rajeshwar Malinda \at University of Hyogo, Kobe Japan, \email{contact@rrmalinda.com}
+}
+
+%
+% Use the package "url.sty" to avoid
+% problems with special characters
+% used in your e-mail or web address
+%
+\maketitle
+
+% --- Unnumbered footnote on the first page (no mark) ---
+\begingroup
+\renewcommand\thefootnote{}
+\footnotetext{\textbf{Sponsor Acknowledgment.} 
+This work was supported by JSPS KAKENHI Grant Number JP21H05302.
+}
+\addtocounter{footnote}{0}
+\endgroup
+% -------------------------------------------------------
+
+\abstract{
+Understanding which individuals are currently leading a swarm and how external interventions affect the entire group is crucial for designing ``swarm-machine interaction'' systems that enable artificial systems to interact with biological swarms such as fish schools.
+This chapter introduces an interaction model for analysis and simulation of actual swarm dynamics, along with its application examples.
+Specifically, based on the well-known Boids model, we propose a method that integrates it with a minimal sparse regression approach to estimate a time-varying network of inter-individual influences, such as attraction and alignment, from observed trajectory data.
+We further extend this minimal model to scenarios involving external visual stimuli, analyzing the effects of stimuli projected via a projector.
+Finally, we discuss several directions for applying the swarm model to data-driven guidance of real fish schools within the framework of swarm-machine interaction.
+}
+
+% Understanding which individuals are currently leading the swarm and how external interventions affect the entire swarm is crucial for designing ``swarm-machine interaction'' systems that interact with biological swarms like fish schools through artificial systems. This chapter introduces an interaction model for real-time understanding and simulation of actual swarm dynamics, along with its application examples. Specifically, using the well-known Boids model as the base model, we propose a method that combines it with a minimal sparse regression approach to estimate the network of influence relationships, such as attraction and alignment, between individuals from observed their trajectory data. We extend this minimal model to scenarios with external stimuli, analyzing the effects of stimuli projected via a projector. 
+% Furthermore, we discuss several directions for applying the swarm model to data-driven guidance of real fish schooling using swarm-machine interaction.
+% Furthermore, as an application, we demonstrate that a fish interaction model, first trained with reinforcement learning in a simulation environment, can be applied to real experiments to guide the group position through the control of pseudo individuals.
+
+% どの個体が今群れをけん引しており、外部からの介入が群れ全体へどのように影響するかを把握することは、魚群などの生物の群れと人工システムを介して相互作用を行う ``swarm-machine interaction'' を設計するうえで重要となる。本章では、リアルタイムに実際の群れの動的な状態を把握しシミュレートするための、相互作用モデルを紹介するとともに、その応用事例を示す。具体的には、よく知られたBoidsモデルをベースモデルとしながら、これを最小構成のスパース回帰手法と組み合わせることにより、観測された個体群の軌跡データから、個体間の attraction や alignmentといった影響関係のネットワークとして推定する手法を提案する。これを外部刺激がある状況に拡張し、プロジェクターで投影した外部刺激の影響を解析する。さらに、魚群モデルと強化学習を統合する応用事例として、疑似個体を制御することで魚群の位置をナビゲートする事例を紹介する。
+
+\section{Introduction}
+\label{sec:intro}
+
+% The goal of our research is 
+% 生物群の移動を誘導することは、生物飼養の自動化や野生生物管理など分野で重要な課題となる。
+Guiding the movement of animal groups is an important challenge across diverse fields, including support systems for husbandry, aquaculture, and wildlife management.
+The goal of our research is to design a framework of a feedback loop that connects the measurement and intervention (Fig.~\ref{fig:project_overview}), aiming to create a ``swarm–machine interaction'' technology that intervenes and guides a swarm (e.g., fish schools) using artificial systems, such as visual stimuli and robots.
+At the same time, the system serves as a platform for developing and refining data-driven models of collective behavior, integrating machine learning techniques such as networked interaction modeling and reinforcement learning–based intervention, in order to bridge the physical and cyber domains.
+% At the same time, the system offers a new scheme for constructing precise models of collective behavior, which are expected to be continuously refined through machine learning techniques (e.g., networked modeling of coordination and reinforcement learning for interaction control) to bridge the physical and cyber spaces.
+
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.9\linewidth]{fig/project_overview.png}
+\caption{Overview of swarm-machine interaction for fish schools.}
+\label{fig:project_overview}
+\end{figure}
+
+Figure~\ref{fig:project_overview} shows an overview of the system designed to interact with fish schools. (1) In the physical space, the collective behavior of fish is captured by computer vision methods, such as multi-object tracking (e.g., \cite{Kawashima14,Rodrigo17,yolo11_ultralytics}). (2) In the cyber space, trajectory data are analyzed using machine learning techniques to extract networks and models of interactions among individuals. (3) Control patterns of stimuli (e.g., movements of dot patterns and pseudo fish) are generated or optimized by the model. (4) Actual stimuli are applied to the fish school based on the control decision.
+% (2) In the cyberspace, the trajectory data are analyzed by machine learning techniques to extract networks and models of inter-individual interactions.
+% Figure~\ref{fig:project_overview} shows the overview of the system that particularly focuses on interacting with fish schools. (1) In physical space, fish collective behavior is captured by computer vision methods, such as multi-object tracking of a fish group (e.g., \cite{Kawashima14,Zhong15,Rodrigo17}). (2) In cyberspace, the trajectory data are analyzed by machine learning techniques to extract interaction networks and models. (3) Control patterns of stimuli (e.g., movements of dot patterns and pseudo fish) are determined or planned by the model. (4) Actual stimuli are provided to the fish school based on the control decision.
+%
+The discrepancy between the predicted and actual responses of the fish school provides feedback to refine both the interaction models and the control policies. This feedback loop closely couples the measurement and intervention in the physical space with the modeling and control design in the cyber space.
+% The discrepancy between the predicted and actual responses of the fish school can be used to refine the models in each module. Through this feedback loop, the measurement and intervention in the physical space are closely coupled with the modeling and control design in the cyber space.
+% The gap between the predicted and the actual responses of the fish school can be used to refine the models of each module. With this feedback loop, we tightly connect the measurement and intervention in physical space to the modeling and control of intervention in cyberspace.
+
+In this chapter, we focus on the second step (2) in Fig.~\ref{fig:project_overview}, modeling and estimating those interactions among individuals within a group that give rise to complex and diverse collective behaviors~\cite{Partridge1982,helbingSocialForceModel1995,couzinCollectiveMemorySpatial2002,Couzin2005,Parrish2002,Vicsek2012}.
+In such interactions, each individual influences others and, in turn, determines its behavior under the influence of others. This chapter addresses the estimation of an \textit{interaction network}~\cite{mesbahiGraphTheoreticMethods2010,rosenthalRevealingHiddenNetworks2015}---a network of influence among individuals---which may change dynamically over time.
+% In this chapter, we focus on the second step (2) in Fig.~\ref{fig:project_overview}---modeling and estimating interactions among individuals within a group, which lead to the emergence of complex and diverse collective behaviors~\cite{Partridge1982,helbingSocialForceModel1995,couzinCollectiveMemorySpatial2002,Couzin2005,Parrish2002,Vicsek2012}. In such interactions, each individual influences others, and in turn, determines behavior under the influence of others. This chapter addresses the problem of estimating an \textit{interaction network}~\cite{mesbahiGraphTheoreticMethods2010,rosenthalRevealingHiddenNetworks2015}---a network of influence among individuals---which may change dynamically over time.
+%
+The estimated network provides essential clues for analyzing how information propagates within the group and for predicting collective behavior. It can also be used to design effective interventions for guiding the entire group through externally induced stimuli~\cite{rahmaniControllabilityMultiAgentSystems2009,kawashimaManipulabilityLeaderFollower2014,egerstedtInteractingNetworksMobile2014a}.
+% to analyze と for analyzing のニュアンスの違い
+% The estimated network provides essential clues to analyze how information propagates inside the group and to predict collective behaviors. It can also be used to design effective interventions for guiding the entire group using stimuli induced externally~\cite{rahmaniControllabilityMultiAgentSystems2009,kawashimaManipulabilityLeaderFollower2014,egerstedtInteractingNetworksMobile2014a}. 
+
+This chapter is organized as follows.
+Section~\ref{sec:base_method} introduces a method for estimating interaction networks among individuals.
+We first summarize the motivation behind our modeling and then extend the method proposed in \cite{Kawashima23} by incorporating both attraction and alignment interactions.
+Section~\ref{sec:visualstimuli} demonstrates the capability of the proposed method by extending it to cases involving external stimuli~\cite{KawashimaAROB2026}.
+Furthermore, in Section~\ref{sec:discussion_guidance}, we discuss how these models can be applied to the guidance of real fish schools, within both model-predictive control and reinforcement learning frameworks. An example is also introduced to demonstrate how an interaction model can be used to train control policy of pseudo fish that interact with real fish schools~\cite{KawashimaShibayama2026}.
+Finally, Section~\ref{sec:conclusion} concludes this chapter.
+% Outline of this chapter is as follows. Section~\ref{sec:base_method} introduces an estimation method of interaction networks among individuals. We first summarize the motivation behind our modeling, and then extend the method proposed in \cite{Kawashima23} by incorporating both attraction and alignment interactions. Section~\ref{sec:visualstimuli} demonstrates the capability of the proposed method by extending it to the case where external stimuli exist. Furthermore, in Section~\ref{sec:reinforcementlearning} we introduce an example of how an interaction models can be used in simulation to train machine learning models to interact with real fish school.
+% Finally, Section~\ref{sec:conclusion} concludes this chapter with future directions.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\section{Interaction-Network Estimation}\label{sec:base_method}
+
+\subsection{Motivation}\label{sec:motivation}
+
+Various methods have been proposed to estimate interaction networks among individuals, depending on how interactions are defined. A common approach is to infer interactions from the instantaneous spatial configuration of individuals, such as relative distance, orientation, or whether another individual lies within the field of view~\cite{rosenthalRevealingHiddenNetworks2015}. These configuration-based criteria provide an intuitive geometric interpretation and have been widely adopted in behavioral studies. However, when the objective is to predict the future dynamics of a group, it is more desirable to estimate the direct influence that each individual exerts on others, rather than relying solely on static spatial relationships.
+% understand or 
+
+In predictive formulations, interactions are defined by the extent to which one individual's motion contributes to predicting another's future state. The main difficulty of such predictive approaches lies in that these influence strengths are not directly observable and must be inferred from time-series data through suitable models. Representative approaches include vector autoregressive models~\cite{bolstadCausalNetworkInference2011} and regularized neural networks~\cite{marcinkevicsInterpretableModelsGranger2021,fujiiLearningInteractionRules2021}. Although these models can capture nonlinear or high-dimensional dependencies, they often sacrifice interpretability, which is crucial for understanding the behavioral rules underlying animal collectives.
+
+To address this issue, our previous work~\cite{Kawashima23} proposed an interpretable, data-driven framework for estimating dynamically changing interaction networks from trajectory data. The method adopts a simple linear formulation that balances model simplicity with the ability to capture temporal variations in influence. The central motivation behind this approach is to reveal how each individual utilizes information from its surroundings, specifically, which features of neighboring individuals contribute most strongly to its behavior.
+
+%Building upon this motivation, the present section revisits the basic model introduced in~\cite{Kawashima23} and illustrates how additional behavioral factors can be incorporated into the framework. As an example, we extend the original attraction-based model by introducing an alignment term that represents the tendency of individuals to align their directions of movement with neighbors. The subsequent section further explores how this framework can be applied to incorporate external stimuli and to examine its broader applicability to collective behavior analysis.
+
+Building upon this motivation, the present section revisits the basic model introduced in~\cite{Kawashima23} and demonstrates how additional behavioral factors can be integrated into the framework.
+As an example, we extend the original attraction-based model by introducing an alignment term that represents the tendency of individuals to align their movement directions with those of their neighbors.
+The subsequent section further explores how this framework can be applied to incorporate external stimuli and to examine its broader applicability to the analysis of collective behavior.
+
+\subsection{Interaction-Network Estimation}
+
+We briefly describe the interaction-network estimation framework introduced in~\cite{Kawashima23}, 
+which infers a dynamically changing network of influences among individuals from trajectory data. 
+The method assumes that (1) each individual's velocity reflects both the influence of others and its own preferred direction~\cite{helbingSocialForceModel1995,Couzin2005}, 
+and (2) each individual is affected by only a limited number of such influence sources.
+% subset of others. 
+A minimal model based on these assumptions enables interpretable estimation of the time-varying interaction structure.
+
+\subsubsection{Base Model}\label{sec:base_model}
+
+Let $\bm{p}_i(t)\in\mathbb{R}^d$ be the position of individual $i \, (i=1,\ldots,N)$, where $N$ is the total number of individuals, and let
+$\bm{v}_i(t)=\frac{d}{dt}\bm{p}_i(t)$ be its velocity, where $d$ denotes the spatial dimension of the motion, typically $d=2$ for planar, which we use in our experiments, or $d=3$ for three-dimensional motion.
+
+To account for a temporal delay in the response of each individual, we introduce a parameter $\tau>0$ representing a short time lag. With this delay, the velocity at time $t+\tau$ is modeled as
+\begin{equation}
+    \bm{v}_i(t+\tau)
+    = \sum_{j\ne i} w_{ij}(t)\frac{\bm{p}_j(t)-\bm{p}_i(t)}{\|\bm{p}_j(t)-\bm{p}_i(t)\|}
+    + \bm{d}_i(t) + \bm{\epsilon}_i(t+\tau),
+    \label{eq:continuous_time_model}
+\end{equation}
+where the first term represents attraction to other individuals, 
+$\bm{d}_i(t)$ is the autonomous component, and $\bm{\epsilon}_i(t)$ is noise. 
+Weights $w_{ij}(t)\!\ge\!0$ quantify how strongly individual $j$ affects $i$, and are zero when no influence exists. 
+The autonomous term is written as
+\begin{equation}
+    \bm{d}_i(t)=w_{ii}(t)\,\tilde{\bm{d}}_i(t), \qquad \|\tilde{\bm{d}}_i(t)\|=1,
+    \label{eq:continuous_time_autonomous}
+\end{equation}
+where $\tilde{\bm{d}}_i(t)$ indicates $i$'s preferred direction and $w_{ii}(t)\!\ge\!0$ represents its strength.
+
+\subsubsection{Formulation for Short-Term Analysis}\label{sec:sampled_model}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{fig/estimation_overview.png}
+\caption{Overview of the dynamic network estimation (example on a simulated trajectory).}
+\label{fig:estimation_overview}
+\end{figure}
+
+
+Figure~\ref{fig:estimation_overview} provides an overview of the estimation procedure.
+Positions and velocities are observed at discrete times $t = 0, T_o, 2T_o,\ldots$ with sampling period $T_o$. 
+By an abuse of notation, we re-index these time points as $t = 0, 1, 2, \ldots$ in what follows.
+We apply short-term analysis using sliding time windows, and the coefficients (i.e., weights and the autonomous term) are assumed to be constant within each window $k$. 
+Let $\tau = \tau_d T_o$ with $\tau_d \in \mathbb{Z}_{>0}$, and define $\bm{p}_{ij,t} = \bm{p}_{j,t} - \bm{p}_{i,t}$ and $\tilde{\bm{p}}_{ij,t} = \bm{p}_{ij,t}/\|\bm{p}_{ij,t}\|$. 
+Then, for $t$ in window $k$,
+\begin{equation}
+    \bm{v}_{i,t+\tau_d}
+    = \sum_{j\ne i} w_{ij,k}\,\tilde{\bm{p}}_{ij,t}
+      + \bm{d}_{i,k}
+      + \bm{\epsilon}_{i,t+\tau_d},
+    \qquad
+    \bm{d}_{i,k} = w_{ii,k}\,\tilde{\bm{d}}_{i,k},\;
+    \|\tilde{\bm{d}}_{i,k}\| = 1.
+    \label{eq:discrete_time_model}
+\end{equation}
+
+\subsubsection{Estimation of Coefficients}\label{sec:estimation}
+
+For each window $k$ with $L$ samples $t=b_k,\ldots,e_k(=b_k{+}L{-}1)$, the parameters $\{w_{ij,k}\}_{j\ne i}$ and $\bm{d}_{i,k}$ are estimated by minimizing the residual sum of squares $J_{i,k} = \sum_{t=b_k}^{e_k} \|\bm{\epsilon}_{i,t+\tau_d}\|_2^2$ under the nonnegativity constraint $w_{ij,k}\ge 0$.
+% \begin{equation}
+%     \min_{\{w_{ij,k}\ge 0\},\,\bm{d}_{i,k}}
+%     \ J_{i,k},
+%     \qquad
+%     J_{i,k}=\sum_{t=b_k}^{e_k}
+%       \left\|
+%       \bm{v}_{i,t+\tau_d}
+%       - \Bigl(\sum_{j\ne i} w_{ij,k}\,\tilde{\bm{p}}_{ij,t}
+%       + \bm{d}_{i,k}\Bigr)
+%       \right\|_2^2.
+%     \label{eq:objective_function_correct}
+% \end{equation}
+Stacking the $L$ equations yields a linear system $\bm{y}=X\bm{\theta}_{i,k}+{\rm noise}$ with design matrix $X$:
+\begin{align}
+  &\bm{\theta}_{i,k}
+  =\bigl(w_{i1,k},\ldots,w_{i,i-1,k},w_{i,i+1,k},\ldots,w_{iN,k},\bm{d}_{i,k}^\top\bigr)^\top,\\
+  &X_t=
+  \begin{bmatrix}
+    \tilde{\bm{p}}_{i1,t} & \cdots & \tilde{\bm{p}}_{i,i-1,t} &
+    \tilde{\bm{p}}_{i,i+1,t} & \cdots & \tilde{\bm{p}}_{iN,t} & I_d
+  \end{bmatrix},\\
+  &X=
+  \begin{bmatrix}
+    X_{b_k}\\ \vdots\\ X_{e_k}
+  \end{bmatrix},
+  \qquad
+  \bm{y}=
+  \begin{bmatrix}
+    \bm{v}_{i,b_k+\tau_d}\\ \vdots\\ \bm{v}_{i,e_k+\tau_d}
+  \end{bmatrix}.
+  \label{eq:stacked_system_correct}
+\end{align}
+For brevity, the dependence of $X$ and $\bm{y}$ on $i$ and $k$ is omitted, while the parameter vector $\bm{\theta}_{i,k}$ explicitly indicates the individual and window.
+
+
+Although the objective function $J_{i,k}$ shows the least-squares form, the actual estimation in~\cite{Kawashima23} employs an elastic-net regularization that combines $\ell_1$ and $\ell_2$ penalties. 
+% The $\ell_1$ term promotes sparsity and interpretability of the inferred network, while the $\ell_2$ term stabilizes estimation when data are noisy or highly correlated. 
+The nonnegativity constraint on $w_{ij,k}$ ensures that only attractive interactions are represented. 
+This framework enables stable and interpretable estimation of dynamically changing interaction networks.
+
+
+\subsection{Experiments Incorporating Alignment Term}\label{sec:attraction_alignment_model}
+
+\subsubsection{Model with Alignment Term}
+
+Following our previous framework~\cite{Kawashima23}, we extend the model by introducing an additional \textit{alignment} term.  
+The original attraction-only model effectively captures positional influences but is limited in representing coordinated directional motion.
+The extended model incorporates both attraction and alignment interactions as
+\begin{equation}
+    \bm{v}_{i,t+\tau_d}
+    = \sum_{j\ne i} w_{ij,k}^{\mathrm{att}}\,\tilde{\bm{p}}_{ij,t}
+      + \sum_{j\ne i, j\in \mathcal{N}^{\mathrm{ali}}_{i,t}} w_{ij,k}^{\mathrm{ali}}\,\tilde{\bm{v}}_{j,t}
+      + \bm{d}_{i,k}
+      + \bm{\epsilon}_{i,t+\tau_d},
+    \label{eq:discrete_with_alignment_model}
+\end{equation}
+where $\tilde{\bm{v}}_{j,t}=\bm{v}_{j,t}/\|\bm{v}_{j,t}\|$ is the normalized velocity of individual $j$.
+The set $\mathcal{N}^{\mathrm{ali}}$ defines which individuals are considered for alignment interactions; for simplicity, we assume that individuals within a certain distance from $i$ are included.
+The coefficients $w_{ij,k}^{\mathrm{att}}$ and $w_{ij,k}^{\mathrm{ali}}$ represent the relative strengths of attraction and alignment, respectively.  
+The estimation procedure follows that described in Sec.~\ref{sec:estimation}, except that the design matrix $X_t$ now includes both normalized relative position and velocity terms.
+
+\subsubsection{Experimental Setup}
+
+We analyzed the same experimental dataset as in~\cite{Kawashima23}, which consisted of ten rummy-nose tetras (\textit{Hemigrammus rhodostomus}, approximately 3~cm in length) swimming in a 30~cm $\times$ 30~cm, 10~cm-deep acrylic tank.  
+One side of the tank was transparent, behind which a monitor displayed visual stimuli, and an overhead color camera (60~fps) positioned above the tank recorded the fish from above to obtain two-dimensional trajectories.
+
+Trajectories were extracted using the multi-object tracking method of~\cite{Kawashima14}, combining background subtraction, Gaussian mixture fitting, and identity association across frames.  
+This method yielded continuous trajectories with minimal identity switching, and residual errors were manually corrected.
+
+As shown in Fig.~\ref{fig:network_comparison} (top left), a visual looming stimulus, a black rectangle gradually expanding on a white background, was presented to evoke schooling behavior.  
+The stimulus was repeatedly shown, and one sequence with clear group movement was selected for analysis.  
+Before the stimulus onset, the group was aggregated but disordered. As the rectangle grew and reached maximum size, the fish exhibited distinct schooling behavior, aligning their orientations and moving coherently in a common direction.
+
+
+\subsubsection{Estimation and Results}
+
+To obtain smooth trajectories, a moving-average filter of nine frames (150\,msec) was applied before computing velocities by frame differencing.  
+We analyzed the obtained 300-frame trajectory with a delay parameter $\tau_d=6$ in~\eqref{eq:discrete_time_model}.  
+The weights $w_{ij,k}$ and $\bm{d}_{i,k}$ were estimated using a window size of $L=10$ frames (166.7\,msec), sliding by one frame (i.e., $k=b_k=t$).
+% TODO: k=b_k=tは正しい?
+
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{fig/network_comparison.png}
+\caption{Comparison between estimated networks from the attraction-only model and the attraction+alignment model.}
+\label{fig:network_comparison}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\begin{subfigure}[t]{\linewidth}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0120.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0140.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0160.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0180.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0200.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/att/0220.png}
+    \caption{Attraction-term network}\label{fig:net_att}
+\end{subfigure}\par\medskip
+\begin{subfigure}[t]{\linewidth}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0120.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0140.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0160.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0180.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0200.png}
+    \includegraphics[width=0.16\linewidth]{fig/net/ali/0220.png}
+\caption{Alignment-term network}\label{fig:net_ali}
+\end{subfigure}\par\medskip
+\caption{Visualization of estimated interaction networks. The width of blue arrows depicts influence strength ($w_{ij}<0.35$ omitted). Circle size represents each individual's total outgoing influence, and black arrows indicate individual velocities.}
+\label{fig:fish_network_with_alignment}
+\end{figure}
+
+As shown in Fig.~\ref{fig:network_comparison}, the extended model, which incorporates an alignment term, captures parallel schooling behavior more clearly than the attraction-only model.
+Figure~\ref{fig:fish_network_with_alignment} visualizes the temporal change of the estimated attraction- and alignment-term networks.
+% Figure~\ref{fig:network_comparison} visualizes the estimated interaction networks when the fish were schooling together strongly.
+Black arrows represent individual velocities $\bm{v}_{i,t}$, and the widths of the blue arrows from $i$ to $j$ correspond to interaction strengths $w_{ij}$. 
+Node color indicates fish ID, and node size represents total outgoing influence. 
+% As shown in Fig.~\ref{fig:net_180}, fish \#3 began leading the group, and in later frames (\#200–240) fish \#3, \#4, and \#10 jointly guided the school (Figs.~\ref{fig:net_200}, \ref{fig:net_220}, and \ref{fig:net_240}).  
+% Figure~\ref{fig:network_comparison} compares the networks estimated by the attraction-only and the attraction+alignment models. 
+As shown in the figure, three fish exhibited leading behavior, influencing others more strongly than being influenced. The attraction-term network more clearly captures this ``leader–follower'' relationships, revealing asymmetric directional influences within the group (Fig.~\ref{fig:net_att}).  
+In contrast, the alignment-term network better represents ``parallel schooling'' states, where individuals maintain coherent directions with less hierarchical structure (Fig.~\ref{fig:net_ali}).
+Together, these complementary representations provide a comprehensive picture of how positional and directional coordination jointly contribute to collective behavior, as shown in Fig.~\ref{fig:network_comparison}.
+
+
+\section{Analysis of Interaction Networks under Projector-Based Stimuli}\label{sec:visualstimuli}
+
+\subsection{Experimental Setup}
+
+% 刺激提示の概要: stimuli: rotating dot pattern
+\subsubsection{Stimuli Design and Experimental Protocol}
+\label{sec:stimuli_experiment}
+
+To investigate the interaction networks under projector-based visual stimulation and to verify the applicability of the proposed modeling framework, we conducted a series of experiments using the network estimation method introduced in Sec.~\ref{sec:estimation}~\cite{KawashimaAROB2026}.
+In these experiments, visual stimuli consisting of rotating dot patterns were projected onto the fish school (Fig.~\ref{fig:tracked_fish}), and their behavioral responses were recorded~\cite{Raj2026}.
+The projected stimuli were designed to induce rotational schooling behavior, enabling us to analyze detailed inter-individual influence patterns during transitions between free schooling and stimulus-induced schooling through the estimated interaction networks.
+
+Five rummy-nose tetras were placed in a shallow, square tank (40~cm $\times$ 40~cm, 5~cm deep).
+Following an acclimation period, a rotating dot-pattern stimulus was projected onto the tank at a constant angular velocity, and fish movements were recorded with an overhead color camera (60~fps).
+Trajectories were extracted (shown as rectangles in Fig.~\ref{fig:tracked_fish}) using the multi-object tracking method YOLO11~\cite{yolo11_ultralytics}.
+Experiments were conducted over three days with three trials per day, testing four conditions: control (C), slow (S1: $0.286~^\circ/\mathrm{s}$), medium (S2: $0.572~^\circ/\mathrm{s}$), and fast rotation (S3: $1.144~^\circ/\mathrm{s}$).
+Each condition lasted $40\,\mathrm{s}$, and the first $35\,\mathrm{s}$ were analyzed.
+Condition order was counterbalanced across trials using a Latin square design.
+
+\subsubsection{Basic Statistics of Fish Behavior}
+
+To quantify the fishes' responses to the rotating dot pattern, we calculated several basic statistical measures~\cite{Raj2026}, including the angular velocity of each fish around the center of rotation (CoR), $\bm{p}_\mathrm{c} \in \mathbb{R}^2$, which was estimated from the video by tracking the projected dot pattern.
+Angular velocity was defined as the rate of change in the angle of each fish's position vector relative to the CoR.
+Figure~\ref{fig:angular_velocity_all} shows violin plots of the time-averaged angular velocities of individual fish under each stimulus condition.
+The horizontal dashed line represents the angular velocity of the rotating stimulus in each condition.
+
+The results indicate that the fish exhibited a significant increase in angular velocity in response to the rotating stimuli, with higher rotation speeds eliciting stronger responses. Here, and in the following figures, statistical significance (Dunn's test with Bonferroni correction) is denoted by *, **, and ***, corresponding to $p < 0.05$, $p < 0.01$, and $p < 0.005$, respectively.
+The average angular velocity of the fish was lower than that of the stimulus, since the fish occasionally swam in various directions, even under stimulus conditions.
+In particular, the violin plots show bimodal distributions in the S1 (slow) and S2 (medium) conditions, suggesting that some fish followed the stimulus closely while others did not.
+This variability in response implies potential differences in how individual fish perceive and react to the external stimuli, which may underlie interaction dynamics within the group.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[t]{0.45\linewidth}
+        \vspace{0pt}
+        \includegraphics[width=0.9\linewidth]{fig/Day1-1-S3-12667_tracked_crop.png}
+        \caption{Tracked fish and projected stimulus}
+        \label{fig:tracked_fish}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\linewidth}
+        \vspace{0pt}
+        \includegraphics[width=0.9\linewidth]{fig/angular_velocity_whitebox.pdf}
+        \caption{Averaged angular velocity of individuals}
+        \label{fig:angular_velocity_all}
+    \end{subfigure}
+    % \begin{minipage}[t]{0.28\textwidth}
+    %     \vspace{0pt}
+    %     \begin{subfigure}[t]{\linewidth}
+    %         \includegraphics[width=\linewidth]{fig/Day1-1-S3-12667_raw_crop.png}
+    %         \caption{Captured image}
+    %         \label{fig:captured_image}
+    %     \end{subfigure}\par\vspace{0.6ex}
+    %     \begin{subfigure}[t]{\linewidth}
+    %         \includegraphics[width=\linewidth]{fig/Day1-1-S3-12667_tracked_crop.png}
+    %         \caption{Tracked fish}
+    %         \label{fig:tracked_fish}
+    %     \end{subfigure}\par\vspace{0.6ex}
+    % \end{minipage}\hfill
+    % \begin{minipage}[t]{0.62\textwidth}
+    %     \vspace{0pt}
+    %     \begin{subfigure}[t]{\linewidth}
+    %         \includegraphics[width=\linewidth]{fig/angular_velocity.pdf}
+    %         \caption{Angular velocity}
+    %         \label{fig:angular_velocity_all}
+    %     \end{subfigure}
+    % \end{minipage}
+    % \hfill
+    \caption{Fish tracking example with visual stimuli (dot patterns) and the time-averaged angular velocity of fish individuals under different stimulus conditions.}
+    \label{fig:angular_velocity}
+\end{figure}
+
+
+\subsection{Model Extension with Stimulus Term}
+\label{sec:model_with_stimuli}
+
+In addition to the basic interaction model, we explored an extension that incorporates the direction of the visual stimulus at each fish's position. This extension aims to capture the relative contributions of internal coordination within the group and responses to external stimuli. By integrating this additional term, we can better characterize how external visual cues influence the interaction dynamics among the fish.
+The extended model is formulated as follows.
+To focus on the effect of the visual stimulus, we do not include the alignment term but extend the original model in Eq.~\eqref{eq:discrete_time_model} by adding the stimulus term.
+
+Letting $\tilde{\bm{s}}_{i,t}$ denote the normalized direction of the visual stimulus at the position of fish $i$ at time $t$, the model is expressed as 
+\begin{equation}
+    \bm{v}_{i,t+\tau_d}
+    = \sum_{j\ne i} w_{ij,k}^{\mathrm{att}}\,\tilde{\bm{p}}_{ij,t}
+      + w_{i,k}^{\mathrm{stim}}\,\tilde{\bm{s}}_{i,t}
+      + \bm{d}_{i,k}
+      + \bm{\epsilon}_{i,t+\tau_d},
+      \label{eq:discrete_with_stimulus_model}
+\end{equation}
+where $w_{i,k}^{\mathrm{stim}}$ represents the weight of the stimulus direction.
+The estimation procedure follows that described in Sec.~\ref{sec:estimation}, except that the design matrix $X_t$ now includes the stimulus-direction term.
+
+
+\subsection{Analysis of Interaction Networks under Visual Stimuli}
+
+% 前節のモデルを実際のデータに適用することで、視覚刺激提示下で群泳状態を定量化する様々な指標を得ることができる。以下では、群泳の要因を詳細に分析するための応用例や、個体差の解析例を示す。
+Applying the model in Eq.~\eqref{eq:discrete_with_stimulus_model} to the data captured by the experiments in Sec.~\ref{sec:stimuli_experiment} yields various indices for quantifying schooling behavior under visual stimulus presentation. Below, we present application examples for detailed analysis of schooling factors and examples of individual variation analysis~\cite{KawashimaAROB2026}.
+
+\subsubsection{Schooling index}
+
+% 群泳の要因解析
+\paragraph{Baseline group-level indices~\cite{Raj2026}}
+
+To determine whether a group of fish is exhibiting schooling behavior, various indices have been proposed. For example, polarization~\cite{vicsekNovelTypePhase1995,couzinCollectiveMemorySpatial2002}, $\frac{1}{N}\|\sum_i \tilde{\bm{v}}_i\|$, aggregates the directions of individuals to quantify the degree of their directional alignment, where $\tilde{\bm{x}} = \bm{x} / \|\bm{x}\|$ denotes the normalized vector of $\bm{x}$ similar to Sec.~\ref{sec:base_method}.
+% to show the degree to which they are moving in the same direction. 
+Inter-individual distance (IID) and the nearest-neighbor distance (NND)~\cite{balleriniInteractionRulingAnimala2008} are also commonly used, where $NND = \frac{1}{N} \sum_i \|\bm{p}_i - \bm{p}_{\mathrm{NN}(i)}\|$ with $\mathrm{NN}(i) := \arg\min_k \|\bm{p}_i - \bm{p}_k\|$ the nearest neighbor of individual $i$. However, under conditions where rotational stimuli are presented in a confined tank, as in our experiments, the swimming directions of individuals vary widely, and these indices may not adequately capture the schooling behavior. Therefore, as the baseline index for schooling behavior, we define $NNCor$ as the mean correlation between the velocity of an individual and that of its nearest neighbor: $NNCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}$.
+% \begin{equation}
+% NNCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}.
+% \end{equation} 
+% Specifically, we calculate the cosine similarity between velocity vector of each individual and that of its nearest neighbor.
+Because this index relies only on the nearest neighbor, it effectively captures local directional alignment.
+Furthermore, to quantify the strength of the response to the external stimulus, we also define $StimCor$ as the mean correlation between the velocity of an individual and the clockwise rotational-direction vector at the position of $i$ with $\bm{p}_\mathrm{c}$ the center of rotation: $StimCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i$, 
+% \begin{equation}
+% StimCor = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i, 
+% \end{equation}
+where $\bm{r}_i$ is a unit vector in the clockwise rotational direction at $\bm{p}_i$ around $\bm{p}_\mathrm{c}$~\footnote{Since we use a left-handed coordinate system, which is standard in image coordinates, $\bm{r}_i = R (\bm{p}_i - \bm{p}_c)$ with $R$ the rotation matrix: $R (x, y)^\top = (-y, x)^\top$.}.
+%  = R (\bm{p}_i - \bm{p}_c)$ with $R$ the rotation matrix: $R (x, y)^\top = (-y, x)^\top$.
+
+Figure~\ref{fig:nn_velocity_correlation} shows an example of the NNCor and StimCor indices under the presentation of the rotational stimulus (S3: fast rotation).
+Both indices exhibit high values, particularly between frames 200 and 700, corresponding to the period when all individuals were engaged in rotational schooling (Fig.~\ref{fig:fish_trajectory_0-900}).
+However, the difference between the NNCor and StimCor values is small, and the relative contribution of internal coordination and external stimuli remain unclear. In the following paragraph, we introduce schooling indices derived from the extended interaction model to directly analyze these contributions.
+% TODO: ここはもう少し検討
+
+% 群泳状態にあるか否かの古典的な指標には、polarity のように各個体の方向を集約してどの程度同一方向に移動しているかを示す指標や、個体間距離の平均値 inter-individual distance、もしくは最近傍個体との距離を調べる nearest-neighbor distance など様々なものが提案されている。しかし、本研究で用いるような限られたサイズの水槽において回転刺激を提示する状況下では、水槽内の個体の方向が様々であり、全個体を集約することや、距離の指標を用いた場合は、適切に群泳状態を捉えられない可能性がある。そこで、本研究では、個体の速度と最近傍個体の速度および回転方向との相関を群泳の指標として用いる。具体的には、各個体の速度ベクトルとその最近傍個体の速度方向との内積を計算し、その平均値を群泳指標とする。この指標は、最近傍個体のみを用いるため、局所的な方向の一致をとらえやすい。さらに、刺激への反応の強さを測るために、各個体の速度ベクトルと回転方向ベクトルも用いる。Fig.~\ref{fig:nn_velocity_correlation}に、回転刺激提示下での群泳指標の例を示す。いずれの指標の値も、特に100フレーム目以降は高い値を取っており、回転刺激に沿って群泳を行っていると推定される。
+
+\paragraph{Group-level indices derived from the extended interaction model}
+
+To derive simple group-level indices from the extended model in Sec.~\ref{sec:model_with_stimuli}, we define the sums of the estimated coefficients over all individuals as follows:
+\begin{description}
+\item[\textbf{Coordination strength}:] $S_{\mathrm{att}} = \sum_i \sum_{j\neq i} w_{ij}^{\mathrm{att}}$
+\item[\textbf{Stimulus responsiveness}:] $S_{\mathrm{stim}} = \sum_i w_{i}^{\mathrm{stim}}$
+%\item[Total autonomous coefficient:] $S_{\mathrm{aut}} = \sum_i w_{ii}$
+\end{description}
+These indices represent the overall behavioral tendencies of the group.
+The coordination strength $S_\mathrm{att}$ indicates the overall level of inter-individual coordination within the group; a higher value corresponds to a stronger tendency toward coordinated schooling. 
+Although it is currently computed from the attraction term,
+the same framework can be extended to include alignment effects in future analyses.
+Likewise, $S_\mathrm{stim}$ represents the overall responsiveness of the group to the external visual stimulus, as it is derived from the total weight of the stimulus term. Here, we used $\tilde{\bm{s}}_i = \bm{r}_i$ for the stimulus direction in Eq.~\eqref{eq:discrete_with_stimulus_model}. 
+% , where $\bm{r}_i$ is the unit vector in the clockwise rotational direction defined in the previous paragraph.
+
+% at $\bm{p}_i$ around the center of rotation $\bm{p}_\mathrm{c}$ 
+% $S_\mathrm{aut}$ indicates the overall strength of autonomous movement tendencies within the group.
+% iとjの両方で総和を取っているので、全個体の影響の和ともいえる..上のように書き換え
+% As a simple schooling index computed from the extended model in Sec.~\ref{sec:model_with_stimuli}, we can use the sum of the attraction-term coefficients for each individual, $\sum_i \sum_{j\neq i} w_{ij}^{\textrm{att}}$, which indicates the degree to which each individual is influenced by others. A higher value suggests that the individual is more engaged in schooling behavior. Additionally, by examining the weights of the stimulus term $\sum_i w_{i}^{\textrm{stim}}$, we can assess how strongly each fish responds to the external visual cue. 
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}[t]{0.52\textwidth}
+        \vspace{0pt}
+        \begin{subfigure}[t]{\linewidth}
+            \includegraphics[width=\linewidth]{fig/fish_trajectory_0-900_colorbyframe.pdf}
+            \caption{Fish trajectories (frame 0--900)}
+            \label{fig:fish_trajectory_0-900}
+        \end{subfigure}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.45\textwidth}
+        \vspace{0pt}
+        \begin{subfigure}[t]{\linewidth}
+            \includegraphics[width=\linewidth]{fig/nn_velocity_correlation_Day2_3_S3_0-900frame_ws60.pdf}
+            \caption{Baseline indices: NNCor and StimCor}
+            \label{fig:nn_velocity_correlation}
+        \end{subfigure}
+        \begin{subfigure}[t]{\linewidth}
+            \includegraphics[width=\linewidth]{fig/schooling_coordinated_raw_Dec24-3-S3_frame0-900_ws60.pdf}            
+            \caption{Model-derived indices: $S_{\mathrm{att}}$ and $S_{\mathrm{stim}}$}
+            \label{fig:schooling_coefsums_stim}
+        \end{subfigure}
+    \end{minipage}
+    % \hfill
+    % \subfloat[Angular velocity (in rotation)]{
+    %     \includegraphics[width=0.40\textwidth]{fig/angular_velocity_ifrot.pdf}
+    %     \label{fig:angular_velocity_ifrot}
+    % }
+    \caption{Fish trajectories under the projected stimulus and introduced group-level indices.}
+    \label{fig:derived_schoolingindex_stim}
+\end{figure}
+
+Figure~\ref{fig:schooling_coefsums_stim} shows the model-derived indices $S_{\mathrm{att}}$ and $S_{\mathrm{stim}}$. 
+The sum of the autonomous coefficients $\sum_i w_{i}^{\textrm{aut}}$ is also plotted with a dashed line for reference.
+%, which represents the overall strength of autonomous movement tendencies within the group. 
+From this figure, we observe that while $S_{\mathrm{stim}}$ exceeds $S_{\mathrm{att}}$ around frames 200--500, $S_{\mathrm{att}}$ becomes larger during frames 0--200 and 700--900, indicating that coordinated schooling behavior is stronger than the response to the stimulus during these periods. 
+In these intervals, subgroups of individuals exhibit coordinated motion in directions different from that of the rotational stimulus, which is clearly reflected in the model-derived indices.
+
+
+\paragraph{Individual-level analysis}
+
+% このように、モデルから得られる指標は、各個体がどの要因で振る舞いを変えているかを調べる手掛かりになる。Fig.~\ref{fig:individual_coefficients}は、異なる刺激条件 (C, S1, S2, S3) における、各個体 Attraction (coordinated) 成分、Stimulus (stimulation) 成分、自律 (autonomous) 成分の各係数の時間平均を個体ごとにプロットしている。そのままの値は速度依存のため、各時刻で各個体の各成分の和が1になるように正規化した値を用いている。これにより、各個体がどの要因に依存して行動しているかを比較できる。なお、条件間の統計的な比較は、ボンフェローニ補正付きのDunn検定を用いて行った。アスタリスクの数が多いほどp値が小さいことを示す（'*', '**', and '***' for $p < 0.05$, $ p < 0.01$, $p < 0.005$, respectively.）。
+The group-level indices obtained from the model provide insight into the factors that derive each individual to change its behavior. Figure~\ref{fig:individual_coefficients} shows the time-averaged coefficients of each individual's attraction (coordination), stimulation, and autonomous components under different stimulus conditions (C, S1, S2, and S3). Because the raw values depend on the velocity magnitude, normalized ratio values were used such that the sum of the three components for each individual at each time point equals 1. This normalization enables comparison of the relative influence of each factor on individual behavior. 
+For consistency, in the no-stimulus condition (C), the stimulus term $\tilde{\bm{s}}_i = \bm{r}_i$ in Eq.~\eqref{eq:discrete_with_stimulus_model} was retained to examine baseline tendency toward the rotational direction even in the absence of external stimuli.
+% Statistical comparisons between conditions were performed using Dunn's test with Bonferroni correction. A greater number of asterisks indicates a smaller p-value.
+
+%Fig.~\ref{fig:individual_coefficients}より、条件間で協調項の大きさ大きな差がないことが分かる。一方で、刺激条件 S3 (高速回転) では、全個体が刺激成分の影響を強く受けており、刺激なし条件 (C) では自律成分の影響が相対的に大きいことが示されている。このように、個体ごとの係数の時間平均を比較することで、刺激条件による行動変化の傾向を把握できる。
+Figure~\ref{fig:individual_coefficients} shows that there is little difference in the coordination terms across conditions.
+In contrast, under the stimulus condition S3 (high-speed rotation), all individuals are strongly influenced by the stimulus, whereas under the no-stimulus condition (C), the influence of the autonomous component is relatively large.
+Thus, comparing the time-averaged coefficients of each individual allows us to capture overall trends in behavioral changes across different stimulus conditions.
+
+
+% 個体ごとの係数（係数総和=1で正規化）の時間平均を条件ごとにプロット
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[t]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{fig/individual_vbsplot_coordinated_tmean_fratio.pdf}
+        \caption{Coordination coefficient}
+        \label{fig:indiv_coordinated_coef}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{fig/individual_vbsplot_wrot_tmean_fratio.pdf}
+        \caption{Stimulus coefficient}
+        \label{fig:indiv_stimulation_coef}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{fig/individual_vbsplot_autonomous_tmean_fratio.pdf}
+        \caption{Autonomous coefficient}
+        \label{fig:indiv_autonomous_coef}
+    \end{subfigure}
+    \caption{Individual coefficients (normalized) time average.}
+    \label{fig:individual_coefficients}
+\end{figure}
+
+
+
+% 個体差の解析
+\subsubsection{Individual Variation of Influence in a Group}
+
+% 一時的には特定の個体がリーダーシップを発揮することもあるが、全体としては個体差は小さい．
+% ただし，刺激に対する反応の強さには個体差がある．
+
+% 群泳を行うときに各個体はどのような役割を担っているだろうか？例えば、群れの中でコアとなり、他の個体に強く影響を与える個体は存在するのだろうか？モデルから推定されるネットワークを用いることで、各個体の役割を分析するための様々な指標を得ることができる。ここでは、比較的シンプルな指標として、個体$i$が他個体に与える影響を、$\sum_{i \neq j} w_{ji}$ を用いて計算する。
+
+\paragraph{Individual influence within a group}
+
+What roles do individual fish play when swimming in a group?
+For example, are there core individuals within the group that exert a particularly strong influence on others?
+By using the interaction network inferred from the model, we can obtain various indices to analyze the role of each individual.
+Here, as a relatively simple index, we define the \textit{individual influence} that individual $i$ exerts on the others as
+\begin{description}
+    \item[\textbf{Individual influence}:] $I_i = \sum_{j \ne i} w_{ji}$
+\end{description}
+% \begin{equation}
+% I_i = \sum_{j \ne i} w_{ji}.
+% \end{equation}
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[t]{0.60\linewidth}
+        \includegraphics[width=\linewidth]{fig/fish_coef_influence_ws30.pdf}
+        \caption{Influence of each fish}
+        \label{fig:fish_coef_influence}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.38\linewidth}
+        \includegraphics[width=0.49\linewidth]{fig/net_Day2-3-S3/0100.png}    
+        \includegraphics[width=0.49\linewidth]{fig/net_Day2-3-S3/0300.png}
+        % \includegraphics[width=0.32\linewidth]{fig/net_Day2-3-S3/0700.png}
+        \caption{Estimated interaction networks (frame 100 and 300)}
+        \label{fig:estimated_networks}
+    \end{subfigure}
+    \caption{Each fish's influence in Fig.~\ref{fig:fish_trajectory_0-900} and estimated interaction networks.}
+    \label{fig:fish_influence_networks}
+\end{figure}
+
+%Figure~\ref{fig:fish_coef_influence}に、各個体の影響力を示す指標の時間変化を示す。用いた系列はFig.~\ref{fig:schooling_coefsums_stim} と同じである。Frame 100 では個体1が、すぐ後に個体5が他個体に強い影響を与えていることがわかる。Fig.~\ref{fig:estimated_networks} (left)に、推定された相互作用ネットワークの例を示す。これらの個体は、ドットパターンの回転方向とは異なる方向に移動する、もしくは停止しており、ちょうどこのperiodでは、すべての個体が同じ個所に集まろうとしており、個体1と5がその中心的役割を果たしている。一方で、300フレーム付近では個体3が大きな影響力を持っているが、推定されたネットワーク（Fig.~\ref{fig:estimated_networks} (middle)）から、刺激の回転方向に沿った群泳を個体3が主導していることが分かる。700フレーム付近では個体2の影響力が強いが、この直後に個体2は刺激の回転方向からはずれた方向に移動し始め、Fig.~\ref{fig:fish_trajectory}に示すように、他の個体がそれに誘導されている。
+%Figure~\ref{fig:fish_coef_influence} shows the temporal variation of indicators representing each individual's influence. The series used are the same as in Fig.~\ref{fig:schooling_coefsums_stim}. At Frame 100, Individual 1 exerts a strong influence on other individuals, followed immediately by Individual 5. Fig.~\ref{fig:estimated_networks} (left) shows an example of the estimated interaction network. These individuals are moving in a direction different from the dot pattern's rotation direction or are stationary. During this period, all individuals appear to be attempting to gather at the same location, with individuals 1 and 5 playing central roles. Meanwhile, around frame 300, Individual 3 exerts significant influence. The estimated network (Fig.~\ref{fig:estimated_networks} (middle)) reveals that Individual 3 initiates schooling along the stimulus rotation direction. Around frame 700, individual 2 exerts strong influence, but immediately afterward, individual 2 begins moving in a direction deviating from the stimulus rotation direction. As shown in Fig.~\ref{fig:fish_trajectory_0-900}, other individuals are induced to follow this movement.
+
+Figure~\ref{fig:fish_coef_influence} shows the temporal variation of the indices representing each individual's influence, based on the same trajectory data as in Fig.~\ref{fig:schooling_coefsums_stim}.
+At around frame~100, ID~1 exerts a strong influence on the others, followed shortly by ID~5 (Fig.~\ref{fig:estimated_networks}, left).
+These individuals move in directions different from the rotation of the dot pattern or remain stationary, and during this period all individuals appear to converge toward the same location, with IDs~1 and~5 playing central roles.
+Later, around frame~300, ID~3 exerts a strong influence (Fig.~\ref{fig:estimated_networks}, right), initiating schooling motion along the rotation direction of the stimulus.
+Finally, around frame~700, ID~2 shows a strong influence but soon begins to move away from the rotation direction; the trajectory plot in Fig.~\ref{fig:fish_trajectory_0-900} shows that the other individuals are subsequently induced to follow this movement.
+
+% このように、推定されたネットワークの動的変化を見ることで、各時刻でどの個体が群れの振る舞いに大きな役割を果たしており、各個体の影響がどのように群れの中を伝播しているのかを把握することができる。さらに計算時間はリアルタイムで可能であり、本提案手法のこのような特徴は、外部からの、影響力の大きな個体に対して動的に介入を行うような応用に有用である。
+%By observing the dynamic changes in the estimated network, we can determine which individuals play a significant role in the group's behavior at each time step and how the influence of each individual propagates throughout the group. Furthermore, computation can be performed in real time. These characteristics of the proposed method are useful for applications involving dynamic intervention targeting influential individuals from an external source.
+
+By observing the dynamic changes in the estimated network, we can identify which individuals play significant roles in the group's behavior at each time step and how their influence propagates throughout the group.
+Moreover, the computation can be performed in real time.
+%These characteristics of the proposed method make it useful for applications that involve dynamic interventions targeting influential individuals from external stimuli or control inputs.
+These characteristics of the proposed method make it useful for applications that involve dynamic interventions targeting influential individuals and influencing them externally.
+
+\paragraph{Individual variation of influence under external stimuli}
+
+% Figure~\ref{fig:fish_coef_influence} では短期的に群れをリードする個体が存在することが分かるが、全体としてはそのような個体は固定的ではなく、入れ替わり立ち替わりリーダーシップを発揮していることが分かる。これはこの系列に限るのだろうか、もしくは全体的に、群れを主導する個体は常に変化しており、各個体の影響力に偏りはないのだろうか？さらに、外部刺激の強さによってその傾向は変化するだろうか？
+%Figure~\ref{fig:fish_coef_influence} shows that individuals temporarily lead the group in the short term, but overall, such individuals are not fixed; leadership shifts among them. Is this limited to this particular series, or is it generally true that the individuals leading the group are constantly changing, with no bias in the influence of each individual? Furthermore, does the strength of external stimuli alter this tendency?
+
+Figure~\ref{fig:fish_coef_influence} shows that some individuals temporarily lead the group over short time spans; however, such leadership is not fixed overall and appears to shift among individuals.
+This observation raises the question of whether this phenomenon is specific to this particular sequence or whether, in general, leadership continuously alternates among individuals without any systematic bias in influence.
+Furthermore, we examine whether the strength of external stimuli affects this tendency.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[t]{0.45\linewidth}
+        \includegraphics[width=\linewidth]{fig/entropy_boxplot_influence_iratio_tmean.pdf}
+        \caption{$H_\mathrm{influ}$}
+        \label{fig:entropy_influence}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.45\linewidth}
+        \includegraphics[width=\linewidth]{fig/entropy_boxplot_wrot_iratio_tmean.pdf}
+        \caption{$H_\mathrm{stim}$}
+        \label{fig:entropy_rotation}
+    \end{subfigure}
+    \caption{Normalized entropy for the individuals' time-averaged relative influence and rotation in the group.}
+    \label{fig:entropy_coefficients}
+\end{figure}
+
+% これを定量的に評価するために、各個体の相対影響力指標の時間平均に対するエントロピーを計算したものをFig.~\ref{fig:entropy_influence}に示す。ここで相対影響力指標とは、各時刻において、各個体の影響力指標の和が1になるようにスケーリングした影響力指標であり、群れの中での相対的な影響の力さを示すものである。この時間平均が1に近いほど、特定の個体が常に大きな影響力を持ち、逆に$1/N$に近いほど、個体ごとの影響力が均等であることを示す。計算されるエントロピーは、各個体の影響力のばらつきを示し、エントロピーが大きいほど、個体ごとの影響力のばらつきが小さく、群れ全体で均等に影響力が分散していることを示す。なお、エントロピーは最大が1になるように正規化してある（すなわち対数の底をNとしている）。
+%To quantitatively evaluate this, we calculated the entropy of each individual's relative influence index with respect to its time-averaged value, shown in Fig.~\ref{fig:entropy_influence}. Here, the relative influence index is an influence index scaled such that the sum of each individual's influence index equals 1 at each time step, indicating the relative strength of influence within the group. The closer this time-averaged value is to 1, the more consistently a specific individual exerts significant influence. Conversely, a value closer to $1/N$ indicates more evenly distributed influence among individuals. The calculated entropy reflects the variability in each individual's influence. Higher entropy indicates less variation in individual influence, suggesting a more evenly dispersed influence across the entire swarm. Note that entropy is normalized such that its maximum value is 1 (i.e., the base of the logarithm is set to N).
+
+%To evaluate this quantitatively, we calculated the entropy of each individual's relative influence index, normalized such that the sum of all indices equals 1 at each time step (Fig.~\ref{fig:entropy_influence}). A higher entropy value indicates more evenly distributed influence among individuals, while a lower value implies dominance by specific individuals. Entropy was normalized to have a maximum of 1 by setting the logarithmic base to $N$.
+
+To evaluate this quantitatively, we computed the entropy of the time-averaged \textit{relative influence} across individuals.
+At each time step $t$, the individual influence index $I_{i,t}$ was normalized as $r_{i,t} = I_{i,t} / \sum_{j=1}^{N} I_{j,t}$, so that $\sum_{i=1}^{N} r_{i,t} = 1$.
+We then obtained the time-averaged distribution
+$\bar{r}_i = \frac{1}{T} \sum_{t=1}^{T} r_{i,t}$,
+which also satisfies$\sum_{i=1}^{N} \bar{r}_i = 1$, representing the average proportion of influence each individual exerts over time.
+Finally, we define the normalized entropy for the time-averaged relative influence as
+\begin{equation}
+    H_\mathrm{influ} = - \sum_{i=1}^{N} \bar{r}_i \log_{N} \bar{r}_i,
+    \label{eq:entropy_influence}
+\end{equation}
+where the logarithmic base $N$ ensures that the maximum entropy is $1$. Similarly, we computed the normalized entropy for the time-averaged relative stimulus coefficient for each individual, denoted as $H_\mathrm{stim}$, by replacing $I_{i,t}$ with the stimulus coefficient $w_{i,t}^\mathrm{stim}$ in the above equations.
+
+% Figure~\ref{fig:entropy_influence}より、相対影響力のエントロピーには条件間で有意な差は見られないことが分かる。一方で、刺激成分のエントロピー（Fig.~\ref{fig:entropy_rotation}）を見ると、刺激なし条件 (C) では個体差が大きく、刺激条件 (S2, S3) では個体差が小さいことが分かる。さらに、エントロピーの値はほぼ1である。これは、刺激提示下では全個体が刺激に対して同様に反応していることを示している。条件Cでは回転刺激は提示されていないが、時計回りの回転方向を見せる個体と見せない個体に偏りがあることを示している。また、S1では有意ではないもののS2やS3よりもばらつきが大きく、刺激に従わない自由度が大きいこと示唆される。一方、S2とS3では多くの個体が刺激に従っており、行動の自由度が乏しいことが個体差を小さくしていると考えられる。
+%Figure~\ref{fig:entropy_influence} shows that no significant differences in $H_\mathrm{influ}$ were observed between conditions, and the values are close to 1. However, examining $H_\mathrm{stim}$ (Fig.~\ref{fig:entropy_rotation}) reveals large individual differences in the no-stimulus condition (C) and small individual differences in the stimulus conditions (S2, S3), closer to 1. This indicates that stronger stimulus presentation make all individuals respond similarly to the stimulus.
+%Although no rotational stimulus is presented in condition C, it shows a bias between individuals displaying a clockwise rotation direction and those not displaying it. Additionally, while not significant, S1 exhibits greater variability than S2 and S3, suggesting a higher degree of freedom not following the stimulus. Conversely, in S2 and S3, most individuals conform to the stimulus, and the reduced behavioral freedom likely contributes to the smaller individual differences.
+
+Figure~\ref{fig:entropy_influence} shows that $H_\mathrm{influ}$ exhibits no significant differences among conditions, with values remaining close to~1, indicating a nearly uniform distribution of influence across individuals.
+In contrast, the entropy of the stimulus component, $H_\mathrm{stim}$ (Fig.~\ref{fig:entropy_rotation}), reveals marked individual variability in the no-stimulus condition~(C) but more homogeneous responses under stimulus conditions~(S2, S3), where the values approach~1.
+This suggests that stronger rotational stimuli induce more uniform behavioral responses among individuals.
+Even without external rotation (C), a bias remains between fish showing clockwise movement and those that do not.
+While not statistically significant, S1 shows greater variability than S2 and S3, implying a higher degree of behavioral freedom.
+Conversely, in S2 and S3, many individuals tend to align with the stimulus, and this reduced behavioral freedom likely accounts for the smaller inter-individual variation.
+
+% 以上の分析より、全体としては特定の個体が群れを主導するわけではなく、Fig.~\ref{fig:fish_influence_network}で見られたように、動的にリーダーシップが入れ替わることが分かる。一方で、外部刺激に対する反応の強さや、行動の記憶には個体差がある可能性がある。特に、外部刺激に強く反応する個体がどのように群れを導くかを調べることは、群れ全体の誘導にとっても重要であり、今後の研究課題である。
+%The above analysis reveals that, overall, no specific individual dominates the group. Instead, leadership dynamically shifts, as observed in Fig.~\ref{fig:fish_influence_networks}. However, there may be individual differences in the strength of responses to external stimuli and in behavioral memory. Investigating how individuals that react strongly to external stimuli guide the group is particularly important for understanding the overall guidance of the group and represents a future research topic.
+
+The above analysis reveals that, overall, no specific individual consistently dominates the group.
+Instead, leadership dynamically shifts among individuals, as observed in Fig.~\ref{fig:fish_influence_networks}.
+However, there may exist individual differences in both the strength of responses to external stimuli and behavioral persistence or memory.
+Clarifying how individuals that respond strongly to external stimuli influence and guide the group will be an important future direction for understanding collective guidance mechanisms.
+
+%\section{Towards the Guidance of Fish Schooling}
+% この節では前節までの結果を踏まえながら、群泳モデルがいかに実個体群の誘導制御に応用できるかについて二通りの方向性について議論する。
+%In this section, building upon the results from the preceding sections, we discuss two approaches for applying the swarm model to the inductive control of real populations.
+
+\section{Towards the Data-Driven Guidance of Fish Schooling}
+\label{sec:discussion_guidance}
+
+Building upon the results from the preceding sections, we discuss two approaches for applying the swarm model to data-driven control and guidance of real fish schooling.
+
+\subsection{Model Predictive Control of Schooling Behavior}
+
+% 前節までの結果を直接的に利用した群れの誘導手法として、モデル予測制御 (Model Predictive Control: MPC) を用いる方法が考えられる。MPCは、現在の状態から将来の状態を予測し、最適な制御入力を計算する手法である。群れが外的な刺激に対してどのように反応するかのネットワークダイナミクスが完全に分かっているとき、MPCを用いて、群れを特定の目標状態に誘導するための最適な刺激パターンを計算することが可能である。しかしながら、実際の群れは確率的要素が多く、個体間相互作用のネットワークダイナミクスも時間とともに変化するため、完全なモデルを得ることは困難である。
+%As a swarm guidance method directly utilizing the results from the previous sections, an approach using Model Predictive Control (MPC) can be considered. MPC is a method that predicts future states from the current state and calculates the optimal control input. When the network dynamics describing how the swarm reacts to external stimuli are fully understood, MPC can be used to calculate the optimal stimulus pattern to guide the swarm to a specific target state. However, real-world swarms involve many probabilistic elements, and the network dynamics of interactions between individuals also change over time, making it difficult to obtain a complete model.
+
+As a method for directly applying the findings from the previous sections to swarm guidance, we consider an approach based on Model Predictive Control (MPC).
+This method predicts future states based on the current state and computes the optimal control input.
+If the inter-individual network dynamics that describe how the swarm responds to external stimuli are fully characterized, MPC can be employed to design an optimal stimulus pattern that guides the swarm toward a desired target state.
+In practice, however, real swarms exhibit stochastic behavior, and their interaction networks vary over time, which makes obtaining a complete and stationary model challenging.
+
+% そこで、前節までに示したような、実個体群のデータから推定された動的ネットワークモデルを多く集めることで、MPCの予測精度を向上させることが期待される。
+%Therefore, by collecting many dynamic networks estimated from real trajectory data, as shown in the previous sections, we expect to improve the prediction accuracy of MPC.
+%That is, this chapter focuses on modeling the first-layer dynamics, i.e., a dynamic model of position and velocity based on \eqref{eq:discrete_time_model} to extract the temporal sequence of $w_{ij}$. As the second-layer on top of this first-layer model, our future goal is to introduce a dynamic model describing interaction networks, i.e., the temporal change of $w_{ij}$. 
+
+Therefore, by accumulating a large number of dynamic networks estimated from real trajectory data, as demonstrated in the previous sections, we expect to improve the predictive accuracy of MPC.
+In this chapter, we focused on modeling the first-layer dynamics---namely, a dynamic model of positions and velocities based on Eq.~\eqref{eq:discrete_time_model}---to extract the temporal sequence of $w_{ij}$.
+As a second layer built upon this first-layer model, our future goal is to introduce a dynamic model that explicitly describes the evolution of interaction networks, i.e., the temporal variation of $w_{ij}$.
+
+% もう一つ重要な要素として考えられるのは、個体のモードやアテンションメカニズムなどの導入であり、様々な内部状態とそのダイナミクスを近似的に加え、より実際の魚の群れに近いモデルを構築することで、短期的な群れの状態を予測が可能となり、その予測に基づいて最適な刺激パターンを計算することで、実個体群の複雑な動態を考慮した効果的な誘導制御が可能となると期待できる。
+%Another important factor to consider is the introduction of individual modes and attention mechanisms. By incorporating approximate representations of various internal states and their dynamics, we can construct models that more closely resemble actual fish schools. This enables prediction of the short-term state of the school. Based on these predictions, we can calculate optimal stimulus patterns, potentially enabling effective guidance control that accounts for the complex dynamics of real populations.
+
+Another important direction is to incorporate individual behavioral modes and attention mechanisms into the model.
+By approximating various internal states and their dynamics, we may construct models that more closely reproduce the behavior of real fish schools.
+Such models would allow short-term prediction of the group's state, and, based on these predictions, optimal stimulus patterns can be computed to achieve effective guidance control that accounts for the complex dynamics of real fish schools.
+
+% As the weights can be considered feature importance for the prediction, such a framework is expected to be useful for explaining the mechanism of collective behaviors, including a variety of species and behavioral rules.
+
+\subsection{Reinforcement Learning Based Guidance of Schooling Behavior}
+
+% 前節の群泳モデルは実個体群の個体間相互作用を定量化するものであったが、群泳モデルを用いて、実個体群の誘導制御を行うことも可能である。ここではその一例として、本プロジェクトで試みた強化学習アプローチを紹介する。
+% The swarm model described in the previous section quantifies interactions between individuals in real populations. However, swarm models can also be used to induce control in real populations. Here, as one example, we briefly introduce the reinforcement learning approach attempted in this project.
+
+The schooling model presented in Sec.~\ref{sec:base_method} quantifies inter-individual interactions observed in real fish groups.
+Beyond quantification, such a model can also be incorporated into a reinforcement learning (RL) framework as an environment model to train guidance policies for fish schooling.
+As a preliminary example, we briefly introduce an RL-based approach integrated with a display-based experimental setup.
+
+\begin{figure}[t]
+    \centering
+    \begin{minipage}[t]{0.48\linewidth}
+        \begin{subfigure}[t]{\linewidth}
+            \vspace{0pt}
+            \includegraphics[width=\linewidth]{fig/displaybased_feedback.png}
+            \caption{Framework for display-based RL feedback.}
+            \label{fig:display_based_feedback}
+        \end{subfigure}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\linewidth}
+        \begin{subfigure}[t]{\linewidth}
+            \centering
+            \vspace{0pt}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0305.png}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0310.png}\\
+            \vspace{1mm}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0315.png}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0320.png}\\
+            \vspace{1mm}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0325.png}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0330.png}\\
+            \vspace{1mm}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0335.png}
+            \includegraphics[width=0.45\linewidth]{fig/miru2014/frame_0340.png}
+            \caption{Pseudo-fish movement and real-fish reaction.}
+            \label{fig:pseudo_real_fish}
+        \end{subfigure}
+        \vspace{1mm}
+        \begin{subfigure}[t]{\linewidth}
+            \vspace{0pt}
+            \centering
+            \includegraphics[width=0.7\linewidth]{fig/displaybased_leftright.png}
+            \caption{Periodic guidance toward left and right.}
+            \label{fig:rl_guidance}
+        \end{subfigure}
+    \end{minipage}
+    \caption{Setup for reinforcement learning-based guidance of fish school.}
+    \label{fig:experimental_setup_rl}
+\end{figure}
+
+% 我々の実験設定をFig.~\ref{fig:display_based_feedback}に示す。奥行きの狭い水槽に対して、側面にディスプレイを接するように配置し、擬似個体映像を映し出す。ディスプレイと反対側にはカメラを配置する。Fig.~\ref{fig:pseudo_real_fish}は擬似個体をディスプレイ上で左右に往復させた場合の実個体の反応例である~\cite{Kawashima14}。擬似個体の動きに合わせて実個体が群れを形成しながら移動していることが分かる。しかしこの擬似個体の動きはあらかじめ決められたものであり、実個体群の状況を踏まえた制御になっていない。
+%Our experimental setup is shown in Fig.~\ref{fig:display_based_feedback}. For the shallow aquarium, a display is positioned flush against the side to project a pseudo-individual image. A camera is positioned opposite the display. Fig.~\ref{fig:pseudo_real_fish} shows an example reaction of real fish when a pseudo-individual was moved back and forth horizontally on the display~\cite{Kawashima14}. It can be seen that the real fish move while forming a school in response to the pseudo-individual's movements. However, these pseudo-individual movements are predetermined and do not involve control based on the real fish group's current state.
+
+Our experimental setup is shown in Fig.~\ref{fig:display_based_feedback}.
+A display was placed flush against one side of a fish tank to project a pseudo-individual video, and a camera was positioned on the opposite side.
+The tank used in this experiment was narrow in depth along the camera optical axis, allowing the fish movement to be close to two-dimensional motion and enabling all fish to be clearly captured in a side view.
+
+Figure~\ref{fig:pseudo_real_fish} shows an example of fish response in this setup~\cite{Kawashima14}. When a formation of pseudo-individuals was moved horizontally on the screen, the real fish collectively followed their motion while maintaining schooling behavior.
+The pseudo-individuals' motion, however, was predetermined as a fixed-period back-and-forth movement, rather than being controlled in response to the real fish group's state.
+
+% そこで、実個体の配置を踏まえた擬似個体の制御方策を、深層強化学習を用いてあらかじめシミュレーションで獲得した。このとき、シミュレートされた実個体は一定の確率で擬似個体に向かい、残りはランダムな方向に動くとし、動き方も実験で用いた魚種に合わせて一次遅れ系とした。また、誘導方向は一定間隔で左右どちらかに切り替わるものとし、擬似個体と実個体とが共にその時点での誘導方向に近づいていれば報酬が高くなるように設計された。
+%Therefore, we pre-acquired control strategies for pseudo-individuals, considering the placement of real individuals, through simulation using deep reinforcement learning. At this time, simulated real individuals were set to move toward pseudo-individuals with a certain probability, while the remainder moved in random directions. Their movement patterns were also designed as first-order lag systems to match the fish species used in the experiment. Furthermore, the guidance direction was designed to switch between left and right at regular intervals. The reward was increased when both the pseudo-individual and the real individual approached the current guidance direction.
+
+Therefore, we pre-obtained a control policy for the pseudo-individuals through simulation using deep reinforcement learning (RL), in response to the configuration of the real fish group.
+In the RL simulation environment, a model of collective fish behavior was required.
+Here, we focused on the attraction term similar to that in Sec.~\ref{sec:base_model}, and the simulated real individuals were modeled to move toward the pseudo-individuals with a certain probability at each step, while otherwise moving toward random targets.
+Their movement toward a target was represented as a first-order lag system to reproduce the intermittent motion characteristics of the fish species used in the experiment.
+The group guidance direction was set to alternate between left and right at regular intervals, and the reward was designed to increase when both the pseudo-individuals and the real individuals approached the current guidance direction.
+
+\begin{figure}[t]
+    \centering
+    \begin{subfigure}[t]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{fig/rl/rl-bgcolor.pdf}
+        \caption{Background color}
+        \label{fig:rl_guidance_bgcolor}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{fig/rl/rl-size.pdf}
+        \caption{Pseudo fish size}
+        \label{fig:rl_guidance_size}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{fig/rl/rl-number.pdf}
+        \caption{\# of pseudo vs real fish}
+        \label{fig:rl_guidance_number}
+    \end{subfigure}
+    \caption{Evaluation of reinforcement learning-based guidance of schooling behavior.}
+    \label{fig:rl_guidance_evaluation}
+\end{figure}
+
+
+% 獲得された擬似個体の制御方策を用い、さらにリアルタイムの個体検出を組み合わせて実際の魚で実験したところ、実個体の重心を、ある程度左右の誘導方向に移動させることが可能であった。左右の誘導期間における重心の分布を求め、この分布間距離（バタチャリア距離）を用いて評価を行った。すると、背景色は白色、疑似個体サイズは実個体よりも大きめ、疑似個体の数は多いほど大きな誘導効果が得られた。ただし、誘導効果はまだ十分ではなく、疑似個体もフォーメーションを組んだ形で移動させているため、複数の擬似個体が協調して実個体を効果的に誘導する手法を今後検討する必要がある。
+%Using the acquired pseudo-individual control strategy combined with real-time individual detection in experiments with actual fish, it was possible to shift the center of mass of real individuals to some extent in the left or right guidance direction. The distribution of the center of mass during the left and right guidance periods was determined, and evaluation was performed using the distance between these distributions (Bhattacharya distance). As shown in Fig.~\ref{fig:rl_guidance_evaluation}, a greater guiding effect was achieved when the background color was white, the pseudo-individual size was slightly larger than the real individual, and the number of pseudo-individuals was higher. However, the guiding effect was still insufficient. Since the pseudo-individuals were also moved in formation, future research should explore methods where multiple pseudo-individuals coordinate to effectively guide the real individual.
+
+Using the control policy obtained through RL, combined with real-time individual detection~\cite{THU-MIGyolov10} in experiments with actual fish, we were able to shift the center of mass of the real individuals to some extent toward the left or right guidance direction.
+The distributions of the center of mass during the left and right guidance periods were obtained, respectively, and evaluated based on the distance between the two distributions (Bhattacharyya distance).
+As shown in Fig.~\ref{fig:rl_guidance_evaluation}, while the overall guiding effect was not yet sufficiently strong, a relatively stronger effect was observed when the background color was white, the pseudo-individuals were slightly larger than the real fish, and the number of pseudo-individuals was higher.
+In the experiments, pseudo-individuals with two or three members moved independently, whereas those with four members moved as a formation.
+Future work therefore should explore adaptive coordination strategies in which multiple pseudo-individuals, whether moving independently or in formation, cooperate to guide the real fish more effectively.
+Furthermore, we plan to integrate the data-driven real-fish behavioral model into the RL training environment and further enable on-line learning through interaction with real individuals.
+
+% 他の手法との比較評価
+% \noindent{\bf Comparative evaluation.} As this paper focuses on demonstrating the basic capability of the interaction-network estimation with a minimal model, we only evaluated the method quantitatively using the simulated data with limited variety. In the future, we plan to conduct a comparative evaluation with other methods (e.g., \cite{marcinkevicsInterpretableModelsGranger2021,fujiiLearningInteractionRules2021}) using simulated data and real data. Since the real data do not have the ground truth of the interaction network, we will compare the capability of predicting the emergence of the schooling behavior, individual roles, and the response to various interventions.
+
+% 他の種の動物データを用いた評価
+% \noindent{\bf Other species.} To apply the proposed method, we need to give the basic interaction rules as the parameter estimation framework. Collective behaviors of each species are different and strongly depend on the characteristics of cognitive capability (e.g., vision and hearing) and the environment~\cite{davidsonCollectiveDetectionBased2021,wangImpactIndividualPerceptual2022}. Thus, the mixture of species-agnostic and species-specific models should be carefully employed.
+
+
+% wのダイナミクスのモデル化
+% 各個体でどのような知覚が用いられているかをデータドリブンに見つけ出す．
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+%This chapter addressed the problem of finding a dynamic network of the interaction of individuals, which is crucial for understanding collective behaviors. We proposed an interpretable method based on short-term regression analysis with a minimal model to estimate interaction networks changing over time from observed trajectory data. We also introduced several extensions such as the incorporation of alignment interactions and external stimuli. A projector-based experimental system was developed to collect trajectory data of schooling fish under visual stimulus conditions with the various analyses of group and individual behaviors. The proposed method successfully inferred interaction networks underlying collective behaviors and characterized dynamically changing individual influences. 
+%We also discussed two approaches for applying fish schooling models to the inductive control of real fish school: Model Predictive Control (MPC) and reinforcement learning-based guidance.
+%These findings contribute to a deeper understanding of the mechanisms driving collective behaviors and pave the way for future research in swarm guidance and control.
+
+This chapter addressed the problem of identifying a dynamic network of inter-individual interactions, which is crucial for understanding collective behaviors.
+We proposed an interpretable method based on a minimal model with short-term regression analysis to estimate time-varying interaction networks from observed trajectory data.
+Several extensions were also introduced, including the incorporation of alignment interactions and external visual stimuli.
+In addition, a projector-based experimental system was developed to collect trajectory data of schooling fish under visual stimulus conditions, enabling analyses of both group-level and individual-level behaviors.
+The proposed method successfully inferred interaction networks underlying collective behaviors and characterized dynamically changing individual influences.
+Finally, we discussed two approaches, MPC and RL, for applying fish schooling models to data-driven control of real fish schools. These studies not only provide insight into the mechanisms driving collective behaviors but also lay the groundwork for future research on swarm-machine interaction.
+
+
+\section*{Acknowledgment}
+
+The authors would like to thank Yu Kanechika, Yusuke Nishii, and Takato Shibayama for their contributions to the early stages of this work, and Saeko Takizawa for preparing the tracking data of schooling fish under projector-based visual stimulation.
+
+
+
+% The preferred spelling of the word ``acknowledgment'' in America is without 
+% an ``e'' after the ``g''. Avoid the stilted expression ``one of us (R. B. 
+% G.) thanks $\ldots$''. Instead, try ``R. B. G. thanks$\ldots$''. Put sponsor 
+% acknowledgments in the unnumbered footnote on the first page.
+
+\bibliographystyle{plain} 
+\bibliography{BioNavi2025}
+
+
+
+
+% \input{references}
+\end{document}

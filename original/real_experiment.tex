@@ -1,0 +1,105 @@
+\begin{figure}[tbp]
+\centering
+% \subfloat[All frames]{\includegraphics[width=0.50\linewidth]{fig/fish_trajectory_8100-8400_colorbyframe.pdf}
+% \label{fig:traj_allframes}}\\
+% \hfil
+\subfloat[Frame 8100-8200]{\includegraphics[width=0.31\linewidth]{fig/fish_trajectory_8100-8200.pdf}
+\label{fig:traj_8100_8200}}
+\hfil
+\subfloat[Frame 8200-8300]{\includegraphics[width=0.31\linewidth]{fig/fish_trajectory_8200-8300.pdf}
+\label{fig:traj_8200_8300}}
+\hfil
+\subfloat[Frame 8300-8400]{\includegraphics[width=0.31\linewidth]{fig/fish_trajectory_8300-8400.pdf}
+\label{fig:traj_8300_8400}}
+\caption{Trajectory of the fish school. Each color corresponds to fish ID. Rectangles, triangles, and circles represent the fish's position at the first frame, middle frame, and last frame in each interval, respectively.}
+\label{fig:fish_trajectory}
+\end{figure}
+
+
+%%
+%%
+%%
+
+\noindent{\bf Coefficient analysis.} 
+We also examined the change of weights to characterize each individual's role using the estimated coefficients in the model \eqref{eq:discrete_time_model}. Fig.~\ref{fig:coef_attraction_sum} shows the sum of estimated attraction weights: $\sum_{j (j \neq i)} w_{ij}$. From the figure, we can see that the subgroup that has larger weights changes in time, e.g., \{\#7, \#9\} at the beginning before $t=100$ and \{\#1, \#4, \#7, \#10\} in the middle (around $t=100$ to $200$) take larger values, and many individuals including \#5 and \#8 take relatively high value in the latter part after $t=200$. From Fig.~\ref{fig:coef_autonomous}, showing the weights of the autonomous term, we can see that the value of \#3, \#4, and \#10 increase in the latter part (after $t=150$). At the same time, those individuals have a large influence on the other individuals, as shown in Fig.~\ref{fig:coef_influence}.
+Here, the influence is computed by the sum of the weights each individual affects the others: $\sum_{j (j\neq i)} w_{ji}$. 
+
+\begin{figure}[tbp]
+\centering
+\subfloat[Attraction term (sum): $\sum_{j (j \neq i)} w_{ij}$]{\includegraphics[width=\linewidth]{fig/fish_coef_coordination_sum.pdf}
+\label{fig:coef_attraction_sum}}\\
+\subfloat[Autonomous term: $w_{ii} = ||\bm{d}_{i}||$]
+{\includegraphics[width=\linewidth]{fig/fish_coef_autonomous.pdf}
+\label{fig:coef_autonomous}}\\
+\subfloat[Influence to the others: $\sum_{j (j \neq i)} w_{ji}$]{\includegraphics[width=\linewidth]{fig/fish_coef_influence.pdf}
+\label{fig:coef_influence}}
+\caption{Temporal change of the coefficients and their derived values. (a) Sum of attraction coefficients (from the others to individual $i$). (b) Weights of the autonomous term. (c) Influence to the others, computed by the sum of attraction coefficients (from individual $i$ to the others).}
+\label{fig:coefficients}
+\end{figure}
+
+%%
+%%
+%%
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\linewidth]{fig/fish_edgeweight_matrices.pdf}
+\caption{Weight matrices $W = [w_{ij}] \, (i,j=1,...,N)$ of the interaction network estimated from nine temporal intervals. $b_k$ (e.g., $b_k=160$) denotes the first frame of each interval. The color represents the value of the weight; the values grater than 3 are saturated. Each matrix includes weights $w_{ii}$ of the autonomous term.}
+\label{fig:weight_matrices}
+\end{figure}
+
+%%
+%%
+%%
+
+\begin{figure}[tbp]
+\centering
+% \subfloat[t: 000]{\includegraphics[width=0.30\linewidth]{fig/net/0000.png}
+% \label{fig:net_000}}
+% \hfil
+% \subfloat[t: 020]{\includegraphics[width=0.30\linewidth]{fig/net/0020.png}
+% \label{fig:net_020}}
+% \hfil
+% \subfloat[t: 040]{\includegraphics[width=0.30\linewidth]{fig/net/0040.png}
+% \label{fig:net_040}}
+% \\
+% \subfloat[t: 060]{\includegraphics[width=0.30\linewidth]{fig/net/0060.png}
+% \label{fig:net_060}}
+% \hfil
+% \subfloat[t: 080]{\includegraphics[width=0.30\linewidth]{fig/net/0080.png}
+% \label{fig:net_080}}
+% \hfil
+% \subfloat[t: 100]{\includegraphics[width=0.30\linewidth]{fig/net/0100.png}
+% \label{fig:net_100}}
+% \\
+\subfloat[t: 120]{\includegraphics[width=0.30\linewidth]{fig/net/0120.png}
+\label{fig:net_120}}
+\hfil
+\subfloat[t: 140]{\includegraphics[width=0.30\linewidth]{fig/net/0140.png}
+\label{fig:net_140}}
+\hfil
+\subfloat[t: 160]{\includegraphics[width=0.30\linewidth]{fig/net/0160.png}
+\label{fig:net_160}}
+\\
+\subfloat[t: 180]{\includegraphics[width=0.30\linewidth]{fig/net/0180.png}
+\label{fig:net_180}}
+\hfil
+\subfloat[t: 200]{\includegraphics[width=0.30\linewidth]{fig/net/0200.png}
+\label{fig:net_200}}
+\hfil
+\subfloat[t: 220]{\includegraphics[width=0.30\linewidth]{fig/net/0220.png}
+\label{fig:net_220}}
+\\
+\subfloat[t: 240]{\includegraphics[width=0.30\linewidth]{fig/net/0240.png}
+\label{fig:net_240}}
+\hfil
+\subfloat[t: 260]{\includegraphics[width=0.30\linewidth]{fig/net/0260.png}
+\label{fig:net_260}}
+\hfil
+\subfloat[t: 280]{\includegraphics[width=0.30\linewidth]{fig/net/0280.png}
+\label{fig:net_280}}
+\caption{Visualization of the estimated interaction networks. The strength of the influence is depicted by the width of the blue arrows; $w_{ij} < 0.35$ are not visualized. The size of the circles represents the sum of influence to the other individuals. The black arrows depict the velocity of each individual.}
+\label{fig:fish_network}
+\end{figure}
+
+

@@ -1,0 +1,147 @@
+\subsection{Simulated Data}
+
+\noindent{\bf Data generation.}
+Simulated trajectory data with three agents ($N=3$) were generated based on the model \eqref{eq:discrete_time_model} with $\tau_d = 0$ and $\bm{\epsilon}_{i,t} = \bm{0}$. Initial positions were determined by the 2D Gaussian distribution with mean $(300, 300)$ and standard deviation $50$. The length of the sequence was set to 120. As for the underlying interaction network (i.e., influences among the agents), we prepared three conditions, C1, C2, and C3, each of which has three phases. In all the conditions, agent \#1 have only the autonomous term, and it always moves toward the right (i.e., $\tilde{d}_1(t) = (1, 0)$) with $w_{11} = 1$. The other two agents have only attraction terms, and agent \#2 starts to follow \#1 at $t = 30$ with $w_{21} = 1$ (phase 2). The difference in the conditions is characterized after $t = 60$ (phase 3). In C1, agent \#3 starts to follow \#1 with $w_{31} = 1$, while in C2, agent \#3 follows \#2 with $w_{32} = 1$. In C3, agent \#3 starts to follow both \#1 and \#2 with the equal weights: $w_{31} = w_{32} = 1$. Examples of the generated sequences are shown in Fig.~\ref{fig:sim_trajectory}.
+% Figs.~\ref{fig:traj_A}, \ref{fig:traj_B}, and \ref{fig:traj_C}.
+
+\begin{figure}[tbp]
+\centering
+% \subfloat[Type A]{\includegraphics[width=0.31\linewidth]{fig/sim_A_6_trajectory_colorbyframe.pdf}
+% \label{fig:traj_A_6_color}}
+% \hfil
+% \subfloat[Type B]{\includegraphics[width=0.31\linewidth]{fig/sim_B_6_trajectory_colorbyframe.pdf}
+% \label{fig:traj_B_6_color}}
+% \hfil
+% \subfloat[Type C]{\includegraphics[width=0.31\linewidth]{fig/sim_C_6_trajectory_colorbyframe.pdf}
+% \label{fig:traj_C_6_color}}
+% \\
+\subfloat[Trajectory in C1]{\includegraphics[width=0.31\linewidth]{fig/sim_A_0_trajectory.pdf}
+\label{fig:traj_A}}
+\hfil
+\subfloat[Trajectory in C2]{\includegraphics[width=0.31\linewidth]{fig/sim_B_11_trajectory.pdf}
+\label{fig:traj_B}}
+\hfil
+\subfloat[Trajectory in C3]{\includegraphics[width=0.31\linewidth]{fig/sim_C_0_trajectory.pdf}
+\label{fig:traj_C}}
+% \subfloat[Type A]{\includegraphics[width=0.31\linewidth]{fig/sim_A_6_trajectory_colorbyframe.pdf}
+% \label{fig:traj_A_6_color}}
+% \hfil
+% \subfloat[Frame 8300-8400]{\includegraphics[width=0.31\linewidth]{fig/fish_trajectory_8300-8400.pdf}
+% \label{fig:traj_8300_8400}}
+% (a-c) Color depicts the frame number. 
+\caption{Examples of the simulated trajectory data. Each color corresponds to the individual ID. Rectangles, triangles, and circles represent the individuals' position at the first frame, middle frame, and last frame, respectively.}
+\label{fig:sim_trajectory}
+\end{figure}
+
+
+\noindent{\bf Estimation of weights and networks.}
+%Figs.~\ref{fig:sim_estimated} (a, c, e) 
+Figs.~\ref{fig:weights_A}, \ref{fig:weights_B}, and \ref{fig:weights_C}
+depict the ground truth and the estimated weights of each condition at $t=10, 40, 70$. While the second and third diagonal elements, corresponding to agent \#2 and \#3's autonomous terms, are large compared to the ground truth (zero values), the elements related to the attraction terms seem to be successfully estimated~\footnote{For implementation simplicity, we employed \texttt{ElasticNet} in the scikit-learn version 1.1.3 with the decomposition of $\bm{d}_{i,k} = \bm{d}_{i,k}^{+} - \bm{d}_{i,k}^{-}$, where $\bm{d}_{i,k}^{+}, \bm{d}_{i,k}^{-} \geq 0$. Hyperparameters $\alpha = 0.1$ and $\beta = 0.5$ were used with the objective function
+$\frac{1}{2 Ld} J + \alpha \beta ||\bm{\theta}||_1 + 0.5 \alpha (1-\beta) ||\bm{\theta}||^2_2$.}. 
+% $\frac{1}{2 n_\text{samples}} J + \alpha l_{1\text{ratio}} ||\bm{\theta}||_1 + 0.5 \alpha (1-l_{1\text{ratio}}) ||\bm{\theta}||^2_2$
+% The regularizer weight and $L_1$ weight were set as $\alpha = 0.1$ and $l_{1\text{ratio}} = 0.5$, respectively, for all the experiments.
+% Figs.~\ref{fig:sim_estimated}, (b, d, f) 
+Figs.~\ref{fig:net_A}, \ref{fig:net_B}, and \ref{fig:net_C}
+are the visualization of the estimated weights of each condition at $t=70$. The black arrows depict velocity $\bm{v}_{i,t}$, and the blue arrows depict the weights of attraction terms $w_{ij}$, only visualized when $w_{ij} \geq 0.35$.
+The obtained interaction networks coincide with the ground truth in these examples.
+
+\begin{figure}[tbp]
+\centering
+\subfloat[Weights (GT and estimated) (C1)]{\includegraphics[width=0.55\linewidth]{fig/sim_A_0_edgeweight_matrices.pdf}
+\label{fig:weights_A}}
+\hfil
+\subfloat[Estimated network (C1)]{\includegraphics[width=0.35\linewidth]{fig/sim_A_0_t70_network.pdf}
+\label{fig:net_A}}
+\\
+\subfloat[Weights (GT and estimated) (C2)]{\includegraphics[width=0.55\linewidth]{fig/sim_B_11_edgeweight_matrices.pdf}
+\label{fig:weights_B}}
+\hfil
+\subfloat[Estimated network (C2)]{\includegraphics[width=0.35\linewidth]{fig/sim_B_11_t70_network.pdf}
+\label{fig:net_B}}
+\\
+\subfloat[Weights (GT and estimated) (C3)]{\includegraphics[width=0.55\linewidth]{fig/sim_C_0_edgeweight_matrices.pdf}
+\label{fig:weights_C}}
+\hfil
+\subfloat[Estimated network (C3)]{\includegraphics[width=0.35\linewidth]{fig/sim_C_0_t70_network.pdf}
+\label{fig:net_C}}
+\caption{Example of the estimated interaction networks. (ace) Ground-truth (top) and estimated weights (bottom). (bdf) Visualization of the networks.}
+\label{fig:sim_estimated}
+\end{figure}
+
+\noindent{\bf Quantitative evaluation.}
+To statistically evaluate the estimation performance, we generated 100 sequences for each condition from randomly initialized agents' positions. Here, we evaluate the estimated weights at $t=70$. By thresholding the estimated weights, we obtain the estimated interaction networks represented by $3 \times 3$ binary values, where 1 and 0 correspond to the existence and non-existence of each term. We compared the estimated networks with the ground-truth networks, consisting of $3 \times 3$ binary values, as shown in Fig~\ref{fig:sim_estimated}. 
+% However, the selection of thresholds is not trivial. Therefore, we use the area under the ROC curve (AUC) as a metric to consider all the possible thresholds. 
+Because the edges of the ground-truth networks are binary, we use the area under the ROC curve (AUC), a standard binary-classification metric, to consider all the possible thresholds.
+Table~\ref{tab:sim_evaluation} shows that all the AUC values are larger than or close to 0.9. For the performance at the best threshold, the table also shows other evaluation metrics, such as F1, F1 (macro), accuracy, and balanced accuracy, using the threshold maximized with F1 (macro). These results indicate that the proposed method estimates the interaction networks with sufficiently high performance in the given conditions. 
+
+% We here used F1 (macro) because accuracy metric is affected by the class imbalance, and F1 is affected by the assignment of positive and negative labels. Balanced accuracy is the averaged recall of the positive and negative samples. These results indicate that the proposed method infers interaction networks with statistical stably. 
+
+% to existence and non-existence of the terms
+% Figs.~\ref{fig:weights_A}, 
+
+\begin{table}[tbp]
+\caption{Evaluation of the estimated weights from 100 trials.}
+\begin{center}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Evaluation}&\multicolumn{3}{|c|}{\textbf{Network condition}} \\
+\cline{2-4} 
+\textbf{metric} & \textbf{C1}& \textbf{C2}& \textbf{C3} \\
+\hline
+AUC & 0.985 & 0.985 & 0.879 \\
+\hline
+F1 & 0.893 & 0.894 & 0.818 \\
+F1 (macro) & 0.922 & 0.922 & 0.836 \\
+Accuracy & 0.933 & 0.932 & 0.838 \\
+Balanced accuracy & 0.908 & 0.913 & 0.836 \\
+\hline
+\end{tabular}
+\label{tab:sim_evaluation}
+\end{center}
+\end{table}
+
+
+
+\iffalse
+\vspace{12pt}
+
+\appendix
+
+\subsection{Implementation details}
+
+\noindent{\bf Formulation details.}
+In the experiments, to exploit the implmenetations of \texttt{ElasticNet} in the scikit-learn, we further decomposed the autonomous term $\bm{d}_{i,k}$ into two parts:
+\begin{equation}
+    \bm{d}_{i,k} = \bm{d}_{i,k}^{+} - \bm{d}_{i,k}^{-},
+\end{equation}
+where $\bm{d}_{i,k}^{+}, \, \bm{d}_{i,k}^{-} \geq 0$. As a result, \eqref{eq:linear_prediction} becomes
+\begin{equation}
+    \begin{bmatrix}
+        \tilde{\bm{p}}_{i1, t} & \cdots & \tilde{\bm{p}}_{iN, t} & I_d & -I_d
+    \end{bmatrix}
+    \begin{bmatrix}
+        w_{i1, k} \\
+        \vdots \\
+        w_{iN, k} \\
+        \bm{d}_{i,k}^{+} \\
+        \bm{d}_{i,k}^{-}
+        ,
+    \end{bmatrix}
+    \label{eq:appendix_linear_prediction}
+\end{equation}
+and we imposed the constraints that all the parameters, including the elements of $\bm{d}_{i,k}^{+}$ and $\bm{d}_{i,k}^{-}$, to be non-negative. 
+% This may affect the results due to the larger penalty on the autonomous term. 
+
+\noindent{\bf Hyperparameter settings.}
+% $\bm{\theta} = (w_1,...,w_{i-1},w_{i+1},...,w_{N}, \bm{d}^{+}, \bm{d}^{-1})$
+Let $\bm{\theta}$ be the $N + 2d - 1$ parameters to be esimated, which is shown as the column vector in \eqref{eq:appendix_linear_prediction}.
+We here omit symbols $i$ and $k$.
+%  , where we omit . We also set $d = 2$ as we assume planar movements. 
+The objective function to be minimized in \texttt{ElasticNet}~\footnote{scikit-learn version 1.1.3 was used in the experiments.} is
+\begin{equation}
+\frac{1}{2 n_\text{samples}} J + \alpha l_{1\text{ratio}} ||\bm{\theta}||_1 + 0.5 \alpha (1-l_{1\text{ratio}}) ||\bm{\theta}||^2_2.
+\end{equation}
+In our setting, $n_\text{samples} = Ld = 2L$ (i.e., planar motion), and for the hyperparameters, we set $\alpha = 0.1$ and $l_{1\text{ratio}} = 0.5$.
+% we set $\alpha = \frac{1}{L}$ and $l_{1\text{ratio}} = 0.5$. Hence, we minimize $\frac{1}{2} J + ||\bm{\theta}||_1 + \frac{1}{2}||\bm{\theta}||^2_2$.
+\fi

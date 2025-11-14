@@ -1,0 +1,57 @@
+
+\subsection{Interaction-Network Estimation}
+
+We propose a method to estimate a dynamically changing interaction network from trajectory data. The approach relies on two assumptions:  
+(1) each individual's velocity is influenced by both other individuals and its own preferred direction~\cite{helbingSocialForceModel1995,Couzin2005}, and  
+(2) each individual is affected by only a limited subset of others.  
+A minimal model is introduced based on (1), and the parameters are estimated under the sparsity assumption (2).
+
+\subsubsection{Model Formulation}\label{sec:model}
+
+Let $\bm{p}_i(t)\in\mathbb{R}^d$ denote the position of individual $i$ at time $t$, and $\bm{v}_i(t)=\frac{d}{dt}\bm{p}_i(t)$ its velocity.  
+We assume that
+\begin{equation}
+    \bm{v}_i(t+\tau)
+    = \sum_{j\ne i} w_{ij}(t)\frac{\bm{p}_j(t)-\bm{p}_i(t)}{\|\bm{p}_j(t)-\bm{p}_i(t)\|}
+    + \bm{d}_i(t) + \bm{\epsilon}_i(t),
+    \label{eq:continuous_time_model_short}
+\end{equation}
+where the first term is the **attraction term**, $\bm{d}_i(t)$ the **autonomous term**, and $\bm{\epsilon}_i(t)$ the noise.  
+The weight $w_{ij}\ge0$ quantifies the strength of $j$’s influence on $i$ and is set to zero when $j$ has no effect.  
+The autonomous term is written as
+\begin{equation}
+    \bm{d}_i(t) = w_{ii}(t)\tilde{\bm{d}}_i(t),
+\end{equation}
+where $\tilde{\bm{d}}_i(t)$ is the unit vector of $i$’s preferred direction.
+
+\subsubsection{Discrete-Time Representation}\label{sec:discrete_model}
+
+Positions and velocities are observed at discrete times $t=0,T_o,2T_o,\ldots$ (with sampling period $T_o$).  
+For short-term analysis with window period $T_a$, we assume that the coefficients are constant within each window $k$.  
+With delay $\tau_d=\tau/T_o$, the discrete model becomes
+\begin{equation}
+    \bm{v}_{i,t+\tau_d}
+    = \sum_{j\ne i} w_{ij,k}\,
+      \frac{\bm{p}_{j,t}-\bm{p}_{i,t}}{\|\bm{p}_{j,t}-\bm{p}_{i,t}\|}
+      + \bm{d}_{i,k} + \bm{\epsilon}_{i,t},
+    \label{eq:discrete_time_model_short}
+\end{equation}
+where $\bm{d}_{i,k}=w_{ii,k}\tilde{\bm{d}}_{i,k}$ and $\|\tilde{\bm{d}}_{i,k}\|=1$.
+
+\subsubsection{Sparse Coefficient Estimation}\label{sec:sparse_estimation}
+
+To infer influential individuals, we estimate $w_{ij,k}$ and $\bm{d}_{i,k}$ via sparse regression.  
+For each window $k$ containing $L$ samples $t=b_k,\ldots,e_k$, we minimize
+\begin{equation}
+    J_{i,k} = 
+    \sum_{t=b_k}^{e_k}
+    \bigl\|
+        \bm{v}_{i,t+\tau_d}
+        - \textstyle(\sum_{j\ne i} w_{ij,k}\tilde{\bm{p}}_{ij,t} + \bm{d}_{i,k})
+    \bigr\|^2_2
+    + \lambda_1\|w_{i,k}\|_1 + \lambda_2\|\bm{d}_{i,k}\|_2^2,
+    \label{eq:sparse_objective}
+\end{equation}
+where $\tilde{\bm{p}}_{ij,t}$ is the normalized relative position.  
+The $\ell_1$ penalty enforces sparsity, making the network interpretable, while $\ell_2$ regularization stabilizes the estimation for small windows or correlated data.  
+Because the model is linear, standard regression solvers can efficiently estimate the parameters.

@@ -1,0 +1,293 @@
+%%%%%%%%%%%%%%%%%%%% author.tex %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% sample root file for your "contribution" to a contributed volume
+%
+% Use this file as a template for your own input.
+%
+%%%%%%%%%%%%%%%% Springer %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[graybox]{svmult}
+
+% choose options for [] as required from the list
+% in the Reference Guide
+
+
+\usepackage{type1cm}        % activate if the above 3 fonts are
+\usepackage{nicefrac}
+                            % not available on your system
+%
+\usepackage{makeidx}         % allows index generation
+\usepackage{graphicx}        % standard LaTeX graphics tool
+                             % when including figure files
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+\usepackage{newtxtext}       % 
+\usepackage[varvw]{newtxmath}       % selects Times Roman as basic font
+
+\usepackage{hyperref}
+\usepackage{cprotect}
+\def\ttdefault{cmtt}
+
+\pagestyle{plain}
+
+% see the list of further useful packages
+% in the Reference Guide
+
+\makeindex             % used for the subject index
+                       % please use the style svind.ist with
+                       % your makeindex program
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title*{\centerline{\LaTeX2$_\varepsilon$ {\sc SVMult} Document Class}
+\centerline{Editor Instructions}
+\centerline{for}
+\centerline{-- Contributed Books --}}
+
+\author{\centerline{$\copyright$ 2018,~Springer Nature}\hfill\break
+\centerline{All rights reserved.}\hfill\break\hfill\break
+%\centerline{June 29, 2007}
+}
+
+\maketitle
+
+\begin{refguide}
+
+\section*{Contents}
+\contentsline {section}{\numberline {{\bf 1}}{\bf Introduction}}{{\bf 2}}{section.0.1}
+\medskip\contentsline {section}{\numberline {{\bf 2}}{\bf Step-by-Step Instructions}}{{\bf 2}}{section.0.2}
+\contentsline {subsection}{\numberline {2.1}Setting up a Root File for Your Book}{3}{subsection.0.2.1}
+\contentsline {subsection}{\numberline {2.2}Initializing the Class}{3}{subsection.0.2.2}
+\contentsline {subsection}{\numberline {2.3}Required Packages}{4}{subsection.0.2.3}
+\contentsline {subsection}{\numberline {2.4}Structuring Commands}{4}{subsection.0.2.4}
+\contentsline {subsection}{\numberline {2.5}Compiling the Contributions}{5}{subsection.0.2.5}
+\contentsline {subsection}{\numberline {2.6}List of Contributors}{5}{subsection.0.2.6}
+\contentsline {subsection}{\numberline {2.7}Best Practice Guidelines for \LaTeX~Manuscripts}{5}{subsection.0.2.7}
+\contentsline {subsection}{\numberline {2.8}Index}{8}{subsection.0.2.8}
+\medskip\contentsline {section}{\numberline {{\bf 3}}{\bf Submitting your Manuscript}}{{\bf 8}}{section.0.3}
+
+\clearpage
+
+\parindent=0pt%
+\parskip=0.6em%
+
+\section{ Introduction}\label{sec:1}
+
+This \emph{editorial supplement} gives advice on how to collect, edit and compile the complete set of authors' contributions for your planned book. It comes with the \textsc{SVMult} tool package specific to -- \emph{Contributed Books (global)} --.
+
+The components of the \textsc{SVMult} tool package (for editors) are:
+
+\begin{itemize}\leftskip15pt
+\item The \emph{Springer Nature \LaTeX~class} \texttt{svmult.cls} (major version 5) and BiBTeX styles \texttt{spmpsci.bst, spphys.bst, spbasic.bst} as well as the \emph{template} with preset class options, packages and coding examples;
+
+\emph{Tip}: Copy these files to your working directory, run \LaTeX2$_\varepsilon$ and produce your own example *.dvi or *.pdf file; rename the template file as you see fit and use it for your own input.
+
+\item \emph{Instructions} with style and coding instructions \emph{specific} to \emph{contributed books};
+
+\emph{Tip}: Follow these instructions to set up the files, to typeset the text and to obtain a consistent formal style; use these pages as checklists before finally submitting the manuscript or print data.
+
+\item The \emph{Reference Guide} describing the \textsc{SVMult} features independent of any specific style requirements.
+
+\emph{Tip}: Use it as a reference if you need to alter or enhance the default
+settings of the \textsc{SVMult} document class and the templates.
+\end{itemize}
+For \emph{volume editors only} the \textsc{SVMult} tool package is enhanced by
+
+\begin{itemize}\leftskip15pt
+\item the \emph{editor instructions} for compiling multiple contributions into a single book.
+\end{itemize}
+
+\section{ Step-by-Step Instructions}
+
+Although we assume that you wish the layout of your book to reflect the individual work of the contributing authors we recommend that all authors of your book use the same basic macros, styles, and sample input files for their manuscript, i.e. the \LaTeX2$_\varepsilon$ \textsc{SVMult} package. Please advise your authors accordingly.
+
+\noindent
+In contrast to our macro package for monographs the \textsc{SVMult} document class provides a text layout specific to \emph{contributed books} with
+
+
+\begin{itemize}\leftskip15pt
+\item the names and affiliations of the contributing authors mentioned in the header and foot of each contribution's first page;
+
+\pagebreak
+
+\item a front and back matter ``reserved'' for editorial contents, such as foreword,
+preface, table of contents, list of contributors, introduction to the volume,
+common appendix and subject index, etc.
+\end{itemize}
+For default settings, detailed instructions on stylistic and formal standards as
+well as on the inclusion of figures we refer you also to the \emph{Author Instructions}.
+
+\subsection{Setting up a Root File for Your Book}\label{sec21}
+
+In order to compile all the contributions into a single book it will be necessary
+that you check the \TeX~file of each individual contribution.
+
+Assuming that the authors have used the Springer Nature template \texttt{author.tex} for
+their own input and thus have all used the same file structure, you must in the
+\emph{preamble} of each of these \TeX~files
+
+\begin{itemize}\leftskip15pt
+\item     delete everything including the command \verb|\begin{document}|. Any individual styles and definitions the author has used must be moved to your
+\emph{root} file (see below)!
+\end{itemize}
+At the \emph{end} of each contribution file
+
+\begin{itemize}\leftskip15pt
+\item delete the commands that format the index (\verb|\printindex|) and delete
+\verb|\end{document}|.
+\end{itemize}
+Save each single contribution as an individual file.
+
+Set up a \emph{root} file complete with all commands needed to invoke the class, the
+packages and the individual contributions.
+
+\subsection{Initializing the Class}
+
+\hspace*{29pc}\emph{Tip:}\\
+Enter\hspace*{27pc}\hbox{Use the preset}\\
+\hspace*{29pc}\hbox{template}\\
+\hspace*{29pc}\hbox{\emph{editor.tex}}
+
+
+\vspace*{-30pt}
+
+
+\cprotect\boxtext{\verb|\documentclass{svmult}|}
+
+at the beginning of your root file. 
+
+%This will set the text area to a \verb|\textwidth| of 117 mm or 27-3/4 pi pi and a \verb|\textheight| of 191 mm or 45-1/6 pi plus a \verb|\headsep| of 12 pt (space between the running head and text).
+
+%\emph{N.B.} Trim size (physical paper size) is $155 \times 235$\,mm or 6$\nicefrac{1}{8}$ $\times$ 9$\nicefrac{1}{4}$ in.
+
+Please refer Section 1.5 ``SN Books Trim Size Table'' in the enclosed {\it Quickstart} for all Book Trim Size like Regular/Medium/Large/Huge. 
+
+For a description of all possible class options provided by \textsc{SVMult} see the
+``\textsc{SVMult} Class Options'' section in the enclosed \emph{Reference Guide}.
+
+\clearpage
+
+\subsection{Required Packages}
+
+The following selection in the past has proved to be essential in preparing a fully formatted (i.e. ready-to-print) manuscript.
+
+Invoke the required packages with the command
+
+\cprotect\boxtext{\verb|\usepackage{}|}
+
+\begin{tabular}{p{7.5pc}@{\qquad}p{18.5pc}}
+{\tt newtxtext.sty} and {\tt newtxmath.sty} & Supports roman text font provided by a Times clone,  sans serif based on a Helvetica clone,  typewriter faces,  plus math symbol fonts whose math italic letters are from a Times Italic clone\\
+\texttt{graphicx.sty}& is a powerful tool for including, rotating, scaling and sizing graphics files (preferably *.eps files)\\
+\texttt{makeidx.sty}& provides  and  interprets  the  command \verb|\printindex| which ``prints'' the index file *.ind (compiled by an index processor) on a chosen page\\
+\texttt{multicol.sty}& balances out the columns on the last page of, for example, your subject index\\
+\texttt{footmisc.sty}& together with style option \texttt{[bottom]} places all footnotes at the bottom of the page
+\end{tabular}
+
+For a description of other useful packages and \textsc{SVMult} class options, special commands and environments tested with the \textsc{SVMult} document class see the \emph{Reference Guide}.
+
+\subsection{Structuring Commands}\label{sec24}
+
+Use the declarations
+
+\cprotect\boxtext{\begin{tabular}{l}\verb|\frontmatter|\\
+\verb|\mainmatter|\\
+\verb|\backmatter|\end{tabular}}
+
+in the root file to divide your manuscript into three parts: (1) the \emph{front matter} for the dedication, foreword, preface, introduction to the volume, table of contents, list of acronyms and, if applicable, the list of contributors; (2) the \emph{main matter} for the individual contributions; (3) the \emph{back matter} for a possible common appendix, bibliography, index, etc.
+
+\pagebreak
+
+\subsection{Compiling the Contributions}
+
+Use this root file for the compilation of your book (see Sects. \ref{sec21}--\ref{sec24}, or adapt and use the sample root file \texttt{editor.tex} which comes with this package.)
+
+Insert the individual contribution files with the \verb|\include| command and compile your root file.
+
+\subsection{List of Contributors}
+
+If your contributions do not contain full author information please create your own list of contributors by using the
+environment \verb|\begin{thecontriblist}| $\ldots$ \verb|\end{contriblist}| provided in the macro package. Detailed instructions for use of this environment can be found in the \emph{Reference Guide}.
+
+\vspace*{-6.5pc}
+\hspace*{29pc}\emph{Tip}:
+\hspace*{29pc}\mbox{Use~the~preset}\\
+\hspace*{29pc}\mbox{template}
+\hspace*{29pc}\mbox{\emph{cblist.tex}}
+
+\vspace*{20pt}
+
+
+\subsection{Best Practice Guidelines for \LaTeX\ Manuscripts}
+
+
+\noindent Please note that observing the following details in creating your manuscript will promote smooth production of your work:
+\begin{itemize}
+\item	Please ensure your \LaTeX\ file can be compiled without errors in a recent version of \LaTeX. We recommend uploading the manuscript to \href{https:\\www.overleaf.com}{Overleaf} (free service) and running the compiler there.
+\item Please avoid including multiple levels of linked sub-files. Well-organized file structure and clear file names improve handling enormously. 
+\item Please avoid macro packages which change standard layout and enumeration settings, such as \verb|fancyhdr|, \verb|a4wide|, \verb|enumerate|, and \verb|enumitem|. These will have to be replaced with standard settings during production.
+\item The use of \verb|\def| is not recommended. Instead, please replace all instances with the appropriate \verb|\newcommand|. This prevents existing commands being inadvertently replaced, producing unexpected errors (more explanation below). 
+\item Please use standard \LaTeX\ commands consistently for character emphasis, such as \verb|\mathbb|, \verb|\mathcal|, or \verb|\mathfrak| and avoid including additional font-related packages such as \verb|bbm|, \verb|dsfonts|, \verb|eucal|, \verb|mathrsfs|, \verb|mathabx|, and \verb|mathtools|.
+\item The \verb|\text{...}| command is recommended for text in math environments rather than \verb|\mbox| or \verb|\hbox| constructions.
+\item Please do not use color for emphasis in running text, particularly not the \verb|xcolor| package (see below for further explanation). As an exception, color may be used for highlighting syntax in code listings.
+\item Images should always be separated from the text (using proper \verb|\includegraphics| commands), must have a caption and must be referenced in the text. Please do not use \verb|wrapfigure| or \verb|subfigure|.
+\item Please note that where \verb|tikz| or \verb|xy| packages (or similar ones creating diagram-like structures) are used, the output cannot be created on the fly for all publication formats produced, but only for PDF. For all other formats, the output has to be included as an image instead (see further details below).
+\item Please do not use \verb|\pageref|, as this will lead to dead links in some output formats, since page orientation is only valid for the PDF (see explanations below).
+\item Please avoid linking back to the manuscript from the bibliography, and do not include footnotes in the bibliography.
+\end{itemize}
+
+\subsubsection*{Why are we asking you to observe these restrictions?}
+
+\noindent We are publishing and distributing your work not only in PDF, but also in other digital/online versions such as html and epub, which are based on XML, the industry standard for data exchange. Using XML as a basis allows us to provide data to other specific interfaces such as Braille machines as well as indexing, abstracting and library services. Satisfying all the requirements of these formats dictates many of the above restrictions, as these are produced from the \LaTeX\ version. The functions and packages that are not recommended in the guidelines above may work in the PDF output, but not beyond that. Although the name PDF (Portable Document Format) suggests portability, it actually depends on the output medium: a professional postscript printer might not produce the same result as a local printer at home or at a department. A prime example of the limitations is that not all aspects of the page-oriented PDF output can be mirrored in other formats. This often requires the source to be adapted to allow all output formats to be produced from it.\medskip 
+
+
+\noindent\textbf{Examples:}
+\begin{itemize}
+\item Constructs such as 
+$$\verb|$X+nY=0 \quad\hbox{for all $n>0$}$|$$
+will not work properly and need to be replaced manually; instead use
+
+$$\verb|$X+nY=0 \text{ for all } n>0$|$$
+to avoid nesting math environments. Note that the \verb|\text| command also adds proper horizontal spacing.
+\item The command \verb|\r| is already predefined as an internal command in \TeX; if you want to define the set of real numbers and use, e.g., \verb|\def\r{\mathbb{R}}|, this internal command is overwritten. If you use \verb|\newcommand{\r}{\mathbb{R}}| for the same purpose, it will result in an error stating that \verb|\r| is already defined. To avoid this, you could use \verb|\newcommand{\R}{\mathbb{R}}| which would work well, but of course all instances of \verb|\r| in your document need to be replaced by \verb|\R|. Avoid using \verb|\renewcommand|.
+\item Commands such as \verb|\enlargethispage| or \verb|\pagebreak|, etc. only work with a fixed output page size which is not valid for all formats. Such commands are then either ignored or produce strange breaks.
+\item Using too many fonts can produce errors in some output formats due to a restriction on the number of fonts that can be used simultaneously. Hence, please consider carefully which fonts are really needed and use these consistently in your manuscript. Also, please do not use fonts that have no proper postscript version as these cannot be handled by professional printers. Avoid the set of so-called Type 3 Postscript fonts, which sometimes occur in specific packages or in figures, as their characters will be omitted in the output. To check whether the document includes such Type 3 fonts, refer to the fonts tab in ``Document Properties'' in \href{https://get.adobe.com/reader/}{Adobe's Acrobat Reader}: this will list all fonts used and whether these are Type 1, True Type (both of which are ok), or Type 3. 
+\item Colors are problematic with regard to accessibility (lack of sufficient contrast between colors) and for other output formats, as colors cannot be freely integrated there. Such passages have to be embedded as images, which in turn will reduce readability. If, nevertheless, specific colors need to be defined, please include CMYK definitions of these colors as - depending on the output - some output drivers such as professional printers cannot deal with RGB colors. E.g.,
+\begin{verbatim}
+\definecolor{ultramarine}{RGB}{1,1,1}
+%%\definecolor{ultramarine}{cmyk}{0,0,0,1}
+
+\textcolor{ultramarine}{Colored text}
+\end{verbatim}
+\item For typesetting algorithms, please use either the \verb|algorithms2e| package or ONE of the (\verb|algpseudocode| OR \verb|algcompatible| OR \verb|algorithmic|) packages to typeset algorithm bodies and the \verb|algorithm| package for captioning the algorithm.
+\item If you use the \verb|newtxmath| package, do NOT include the \verb|amsmath| package separately.
+\item Please try to avoid the \verb|tikz|, \verb|xy|, and \verb|pstricks| packages if possible. These graphs/figures cannot be rendered in our other output formats, therefore can only be included there as rendered image files of a fixed resolution.
+\item Caution with packages which embed page-like structures within layout elements, such as \verb|multicol| or \verb|minipage| (sometimes used to create specific layout within \verb|\mbox| or \verb|\parbox|). These can cause significant problems for some output formats or can only be rendered as images.
+\end{itemize}
+
+\eject
+
+\subsection{Index}
+
+Provided that the contributing authors have coded their entries for the book's subject index with the command \verb|\index{}| you may use the \emph{MakeIndex} program to automatically generate a common subject index.
+
+Please check the output for any redundancy before submitting your manuscript files.
+
+Be sure to use the style file \texttt{svind.ist} with the index processor \emph{MakeIndex} to give your index the required Springer Nature layout.
+
+For a description of \textsc{SVMult} enhancements to the index environment refer to the enclosed \emph{Reference Guide}.
+
+\section{ Submitting your Manuscript}
+
+As soon as you have finalized the content and structure of your book and have compiled all contributions, send us all the source files (text and figures), i.e. *.tex, *.eps, *.cls, *.sty, as well as the digitial output, i.e. *.dvi, *.ps, *.pdf, and, if possible, a 600 dpi printout.
+
+Please direct any queries concerning your book project to your contact person at Springer Nature. They will be happy to respond directly or pass on your query to the expert in charge.
+
+\end{refguide}
+
+\end{document}
