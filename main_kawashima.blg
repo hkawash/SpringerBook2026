@@ -1,0 +1,50 @@
+This is BibTeX, Version 0.99d (TeX Live 2024)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main_kawashima.aux
+The style file: plain.bst
+Database file #1: BioNavi2025.bib
+Warning--there's a number but no volume in Kawashima14
+Warning--empty year in KawashimaShibayama2026
+Warning--empty year in Raj2026
+You've used 24 entries,
+            2118 wiz_defined-function locations,
+            668 strings with 9612 characters,
+and the built_in function-call counts, 8659 in all, are:
+= -- 819
+> -- 542
+< -- 1
++ -- 213
+- -- 187
+* -- 699
+:= -- 1513
+add.period$ -- 74
+call.type$ -- 24
+change.case$ -- 162
+chr.to.int$ -- 0
+cite$ -- 27
+duplicate$ -- 266
+empty$ -- 574
+format.name$ -- 187
+if$ -- 1711
+int.to.chr$ -- 0
+int.to.str$ -- 24
+missing$ -- 24
+newline$ -- 124
+num.names$ -- 50
+pop$ -- 152
+preamble$ -- 1
+purify$ -- 139
+quote$ -- 0
+skip$ -- 179
+stack$ -- 0
+substring$ -- 475
+swap$ -- 33
+text.length$ -- 1
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 94
+warning$ -- 3
+while$ -- 77
+width$ -- 26
+write$ -- 258
+(There were 3 warnings)
