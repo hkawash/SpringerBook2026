@@ -188,10 +188,10 @@ $\bm{d}_i(t)$ is the autonomous component, and $\bm{\epsilon}_i(t)$ is noise.
 Weights $w_{ij}(t)\!\ge\!0$ quantify how strongly individual $j$ affects $i$, and are zero when no influence exists. 
 The autonomous term is written as
 \begin{equation}
-    \bm{d}_i(t)=w_{ii}(t)\,\tilde{\bm{d}}_i(t), \qquad \|\tilde{\bm{d}}_i(t)\|=1,
+    \bm{d}_i(t)=w_{ii}(t)\,\hat{\bm{d}}_i(t), \qquad \|\hat{y\bm{d}}_i(t)\|=1,
     \label{eq:continuous_time_autonomous}
 \end{equation}
-where $\tilde{\bm{d}}_i(t)$ indicates $i$'s preferred direction and $w_{ii}(t)\!\ge\!0$ represents its strength.
+where $\hat{y\bm{d}}_i(t)$ indicates $i$'s preferred direction and $w_{ii}(t)\!\ge\!0$ represents its strength.
 
 \subsubsection{Formulation for Short-Term Analysis}\label{sec:sampled_model}
 
@@ -207,16 +207,16 @@ Figure~\ref{fig:estimation_overview} provides an overview of the estimation proc
 Positions and velocities are observed at discrete times $t = 0, T_o, 2T_o,\ldots$ with sampling period $T_o$. 
 By an abuse of notation, we re-index these time points as $t = 0, 1, 2, \ldots$ in what follows.
 We apply short-term analysis using sliding time windows, and the coefficients (i.e., weights and the autonomous term) are assumed to be constant within each window $k$. 
-Let $\tau = \tau_d T_o$ with $\tau_d \in \mathbb{Z}_{>0}$, and define $\bm{p}_{ij,t} = \bm{p}_{j,t} - \bm{p}_{i,t}$ and $\tilde{\bm{p}}_{ij,t} = \bm{p}_{ij,t}/\|\bm{p}_{ij,t}\|$. 
+Let $\tau = \tau_d T_o$ with $\tau_d \in \mathbb{Z}_{>0}$, and define $\bm{p}_{ij,t} = \bm{p}_{j,t} - \bm{p}_{i,t}$ and $\hat{y\bm{p}}_{ij,t} = \bm{p}_{ij,t}/\|\bm{p}_{ij,t}\|$. 
 Then, for $t$ in window $k$,
 \begin{equation}
     \bm{v}_{i,t+\tau_d}
-    = \sum_{j\ne i} w_{ij,k}\,\tilde{\bm{p}}_{ij,t}
+    = \sum_{j\ne i} w_{ij,k}\,\hat{y\bm{p}}_{ij,t}
       + \bm{d}_{i,k}
       + \bm{\epsilon}_{i,t+\tau_d},
     \qquad
-    \bm{d}_{i,k} = w_{ii,k}\,\tilde{\bm{d}}_{i,k},\;
-    \|\tilde{\bm{d}}_{i,k}\| = 1.
+    \bm{d}_{i,k} = w_{ii,k}\,\hat{y\bm{d}}_{i,k},\;
+    \|\hat{y\bm{d}}_{i,k}\| = 1.
     \label{eq:discrete_time_model}
 \end{equation}
 
@@ -230,7 +230,7 @@ For each window $k$ with $L$ samples $t=b_k,\ldots,e_k(=b_k{+}L{-}1)$, the param
 %     J_{i,k}=\sum_{t=b_k}^{e_k}
 %       \left\|
 %       \bm{v}_{i,t+\tau_d}
-%       - \Bigl(\sum_{j\ne i} w_{ij,k}\,\tilde{\bm{p}}_{ij,t}
+%       - \Bigl(\sum_{j\ne i} w_{ij,k}\,\hat{y\bm{p}}_{ij,t}
 %       + \bm{d}_{i,k}\Bigr)
 %       \right\|_2^2.
 %     \label{eq:objective_function_correct}
@@ -241,8 +241,8 @@ Stacking the $L$ equations yields a linear system $\bm{y}=X\bm{\theta}_{i,k}+{\r
   =\bigl(w_{i1,k},\ldots,w_{i,i-1,k},w_{i,i+1,k},\ldots,w_{iN,k},\bm{d}_{i,k}^\top\bigr)^\top,\\
   &X_t=
   \begin{bmatrix}
-    \tilde{\bm{p}}_{i1,t} & \cdots & \tilde{\bm{p}}_{i,i-1,t} &
-    \tilde{\bm{p}}_{i,i+1,t} & \cdots & \tilde{\bm{p}}_{iN,t} & I_d
+    \hat{y\bm{p}}_{i1,t} & \cdots & \hat{y\bm{p}}_{i,i-1,t} &
+    \hat{y\bm{p}}_{i,i+1,t} & \cdots & \hat{y\bm{p}}_{iN,t} & I_d
   \end{bmatrix},\\
   &X=
   \begin{bmatrix}
@@ -273,13 +273,13 @@ The original attraction-only model effectively captures positional influences bu
 The extended model incorporates both attraction and alignment interactions as
 \begin{equation}
     \bm{v}_{i,t+\tau_d}
-    = \sum_{j\ne i} w_{ij,k}^{\mathrm{att}}\,\tilde{\bm{p}}_{ij,t}
-      + \sum_{j\ne i, j\in \mathcal{N}^{\mathrm{ali}}_{i,t}} w_{ij,k}^{\mathrm{ali}}\,\tilde{\bm{v}}_{j,t}
+    = \sum_{j\ne i} w_{ij,k}^{\mathrm{att}}\,\hat{y\bm{p}}_{ij,t}
+      + \sum_{j\ne i, j\in \mathcal{N}^{\mathrm{ali}}_{i,t}} w_{ij,k}^{\mathrm{ali}}\,\hat{y\bm{v}}_{j,t}
       + \bm{d}_{i,k}
       + \bm{\epsilon}_{i,t+\tau_d},
     \label{eq:discrete_with_alignment_model}
 \end{equation}
-where $\tilde{\bm{v}}_{j,t}=\bm{v}_{j,t}/\|\bm{v}_{j,t}\|$ is the normalized velocity of individual $j$.
+where $\hat{y\bm{v}}_{j,t}=\bm{v}_{j,t}/\|\bm{v}_{j,t}\|$ is the normalized velocity of individual $j$.
 The set $\mathcal{N}^{\mathrm{ali}}$ defines which individuals are considered for alignment interactions; for simplicity, we assume that individuals within a certain distance from $i$ are included.
 The coefficients $w_{ij,k}^{\mathrm{att}}$ and $w_{ij,k}^{\mathrm{ali}}$ represent the relative strengths of attraction and alignment, respectively.  
 The estimation procedure follows that described in Sec.~\ref{sec:estimation}, except that the design matrix $X_t$ now includes both normalized relative position and velocity terms.
@@ -363,7 +363,7 @@ The projected stimuli were designed to induce rotational schooling behavior, ena
 Five rummy-nose tetras were placed in a shallow, square tank (40~cm $\times$ 40~cm, 5~cm deep).
 Following an acclimation period, a rotating dot-pattern stimulus was projected onto the tank at a constant angular velocity, and fish movements were recorded with an overhead color camera (60~fps).
 Trajectories were extracted (shown as rectangles in Fig.~\ref{fig:tracked_fish}) using the multi-object tracking method YOLO11~\cite{yolo11_ultralytics}.
-Experiments were conducted over three days with three trials per day, testing four conditions: control (C), slow (S1: $0.286~^\circ/\mathrm{s}$), medium (S2: $0.572~^\circ/\mathrm{s}$), and fast rotation (S3: $1.144~^\circ/\mathrm{s}$).
+Experiments were conducted over three days with three trials per day, testing four conditions: control (C), slow (S1: $0.286~^\circ/\mathrm{frame}$), medium (S2: $0.572~^\circ/\mathrm{frame}$), and fast rotation (S3: $1.144~^\circ/\mathrm{frame}$).
 Each condition lasted $40\,\mathrm{s}$, and the first $35\,\mathrm{s}$ were analyzed.
 Condition order was counterbalanced across trials using a Latin square design.
 
@@ -374,7 +374,7 @@ Angular velocity was defined as the rate of change in the angle of each fish's p
 Figure~\ref{fig:angular_velocity_all} shows violin plots of the time-averaged angular velocities of individual fish under each stimulus condition.
 The horizontal dashed line represents the angular velocity of the rotating stimulus in each condition.
 
-The results indicate that the fish exhibited a significant increase in angular velocity in response to the rotating stimuli, with higher rotation speeds eliciting stronger responses. Here, and in the following figures, statistical significance (Dunn's test with Bonferroni correction) is denoted by *, **, and ***, corresponding to $p < 0.05$, $p < 0.01$, and $p < 0.005$, respectively.
+The results indicate that the fish exhibited a significant increase in angular velocity in response to the rotating stimuli, with higher rotation speeds eliciting stronger responses. Here, and in the following figures, statistical significance (Dunn's test with Bonferroni correction) is denoted by *, **, and ***, corresponding to $p < 0.05$, $p < 0.01$, and $p < 0.001$, respectively.
 The average angular velocity of the fish was lower than that of the stimulus, since the fish occasionally swam in various directions, even under stimulus conditions.
 In particular, the violin plots show bimodal distributions in the S1 (slow) and S2 (medium) conditions, suggesting that some fish followed the stimulus closely while others did not.
 This variability in response implies potential differences in how individual fish perceive and react to the external stimuli, which may underlie interaction dynamics within the group.
@@ -428,11 +428,11 @@ In addition to the basic interaction model, we explored an extension that incorp
 The extended model is formulated as follows.
 To focus on the effect of the visual stimulus, we do not include the alignment term but extend the original model in Eq.~\eqref{eq:discrete_time_model} by adding the stimulus term.
 
-Letting $\tilde{\bm{s}}_{i,t}$ denote the normalized direction of the visual stimulus at the position of fish $i$ at time $t$, the model is expressed as 
+Letting $\hat{y\bm{s}}_{i,t}$ denote the normalized direction of the visual stimulus at the position of fish $i$ at time $t$, the model is expressed as 
 \begin{equation}
     \bm{v}_{i,t+\tau_d}
-    = \sum_{j\ne i} w_{ij,k}^{\mathrm{att}}\,\tilde{\bm{p}}_{ij,t}
-      + w_{i,k}^{\mathrm{stim}}\,\tilde{\bm{s}}_{i,t}
+    = \sum_{j\ne i} w_{ij,k}^{\mathrm{att}}\,\hat{y\bm{p}}_{ij,t}
+      + w_{i,k}^{\mathrm{stim}}\,\hat{y\bm{s}}_{i,t}
       + \bm{d}_{i,k}
       + \bm{\epsilon}_{i,t+\tau_d},
       \label{eq:discrete_with_stimulus_model}
@@ -451,19 +451,19 @@ Applying the model in Eq.~\eqref{eq:discrete_with_stimulus_model} to the data ca
 % 群泳の要因解析
 \paragraph{Baseline group-level indices~\cite{Raj2026}}
 
-To determine whether a group of fish is exhibiting schooling behavior, various indices have been proposed. For example, polarization~\cite{vicsekNovelTypePhase1995,couzinCollectiveMemorySpatial2002}, $\frac{1}{N}\|\sum_i \tilde{\bm{v}}_i\|$, aggregates the directions of individuals to quantify the degree of their directional alignment, where $\tilde{\bm{x}} = \bm{x} / \|\bm{x}\|$ denotes the normalized vector of $\bm{x}$ similar to Sec.~\ref{sec:base_method}.
+To determine whether a group of fish is exhibiting schooling behavior, various indices have been proposed. For example, polarization~\cite{vicsekNovelTypePhase1995,couzinCollectiveMemorySpatial2002}, $\frac{1}{N}\|\sum_i \hat{y\bm{v}}_i\|$, aggregates the directions of individuals to quantify the degree of their directional alignment, where $\hat{y\bm{x}} = \bm{x} / \|\bm{x}\|$ denotes the normalized vector of $\bm{x}$ similar to Sec.~\ref{sec:base_method}.
 % to show the degree to which they are moving in the same direction. 
-Inter-individual distance (IID) and the nearest-neighbor distance (NND)~\cite{balleriniInteractionRulingAnimala2008} are also commonly used, where $NND = \frac{1}{N} \sum_i \|\bm{p}_i - \bm{p}_{\mathrm{NN}(i)}\|$ with $\mathrm{NN}(i) := \arg\min_k \|\bm{p}_i - \bm{p}_k\|$ the nearest neighbor of individual $i$. However, under conditions where rotational stimuli are presented in a confined tank, as in our experiments, the swimming directions of individuals vary widely, and these indices may not adequately capture the schooling behavior. Therefore, as the baseline index for schooling behavior, we employ a widely used local directional alignment metric, hereafter termed $NNCorr$, defined as the mean correlation between each individual's velocity and that of its nearest neighbor: $\mathrm{NNCorr} = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}$.
+Inter-individual distance (IID) and the nearest-neighbor distance (NND)~\cite{balleriniInteractionRulingAnimala2008} are also commonly used, where $NND = \frac{1}{N} \sum_i \|\bm{p}_i - \bm{p}_{\mathrm{NN}(i)}\|$ with $\mathrm{NN}(i) := \arg\min_k \|\bm{p}_i - \bm{p}_k\|$ the nearest neighbor of individual $i$. However, under conditions where rotational stimuli are presented in a confined tank, as in our experiments, the swimming directions of individuals vary widely, and these indices may not adequately capture the schooling behavior. Therefore, as the baseline index for schooling behavior, we employ a widely used local directional alignment metric, hereafter termed $NNCorr$, defined as the mean correlation between each individual's velocity and that of its nearest neighbor: $\mathrm{NNCorr} = \frac{1}{N} \sum_i \hat{y\bm{v}}_i \cdot \hat{y\bm{v}}_{\mathrm{NN}(i)}$.
 % \begin{equation}
-% NNCorr = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \tilde{\bm{v}}_{\mathrm{NN}(i)}.
+% NNCorr = \frac{1}{N} \sum_i \hat{y\bm{v}}_i \cdot \hat{y\bm{v}}_{\mathrm{NN}(i)}.
 % \end{equation} 
 % Specifically, we calculate the cosine similarity between velocity vector of each individual and that of its nearest neighbor.
 % Because this index relies only on the nearest neighbor, it effectively captures local directional alignment.
-Furthermore, to quantify the strength of the response to the external stimulus, we also define $StimCorr$ as the mean correlation between the velocity of an individual and the clockwise rotational-direction vector at the position of $i$ with $\bm{p}_\mathrm{c}$ the center of rotation: $\mathrm{StimCorr} = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i$, 
+Furthermore, to quantify the strength of the response to the external stimulus, we also define $StimCorr$ as the mean correlation between the velocity of an individual and the clockwise rotational-direction vector at the position of $i$ with $\bm{p}_\mathrm{c}$ the center of rotation: $\mathrm{StimCorr} = \frac{1}{N} \sum_i \hat{y\bm{v}}_i \cdot \hat{\bm{r}}_i$, 
 % \begin{equation}
-% StimCorr = \frac{1}{N} \sum_i \tilde{\bm{v}}_i \cdot \bm{r}_i, 
+% StimCorr = \frac{1}{N} \sum_i \hat{y\bm{v}}_i \cdot \hat{\bm{r}}_i, 
 % \end{equation}
-where $\bm{r}_i$ is a unit vector in the clockwise rotational direction at $\bm{p}_i$ around $\bm{p}_\mathrm{c}$~\footnote{Since we use a left-handed coordinate system, which is standard in image coordinates, $\bm{r}_i = R (\bm{p}_i - \bm{p}_c)$ with $R$ the rotation matrix: $R (x, y)^\top = (-y, x)^\top$.}.
+where $\hat{\bm{r}}_i$ is a unit vector in the clockwise rotational direction at $\bm{p}_i$ around $\bm{p}_\mathrm{c}$~\footnote{Since we use a left-handed coordinate system, which is standard in image coordinates, $\bm{r}_i = R (\bm{p}_i - \bm{p}_c)$ with $R$ the 90^\circ rotation matrix: $R (x, y)^\top = (-y, x)^\top$.}.
 %  = R (\bm{p}_i - \bm{p}_c)$ with $R$ the rotation matrix: $R (x, y)^\top = (-y, x)^\top$.
 
 Figure~\ref{fig:nn_velocity_correlation} shows an example of the NNCorr and StimCorr indices under the presentation of the rotational stimulus (S3: fast rotation).
@@ -485,7 +485,7 @@ These indices represent the overall behavioral tendencies of the group.
 The coordination strength $S_\mathrm{att}$ indicates the overall level of inter-individual coordination within the group; a higher value corresponds to a stronger tendency toward coordinated schooling. 
 Although it is currently computed from the attraction term,
 the same framework can be extended to include alignment effects in future analyses.
-Likewise, $S_\mathrm{stim}$ represents the overall responsiveness of the group to the external visual stimulus, as it is derived from the total weight of the stimulus term. Here, we used $\tilde{\bm{s}}_i = \bm{r}_i$ for the stimulus direction in Eq.~\eqref{eq:discrete_with_stimulus_model}. 
+Likewise, $S_\mathrm{stim}$ represents the overall responsiveness of the group to the external visual stimulus, as it is derived from the total weight of the stimulus term. Here, we used $\hat{y\bm{s}}_i = \hat{\bm{r}}_i$ for the stimulus direction in Eq.~\eqref{eq:discrete_with_stimulus_model}. 
 % , where $\bm{r}_i$ is the unit vector in the clockwise rotational direction defined in the previous paragraph.
 
 % at $\bm{p}_i$ around the center of rotation $\bm{p}_\mathrm{c}$ 
@@ -534,9 +534,9 @@ In these intervals, subgroups of individuals exhibit coordinated motion in direc
 
 \paragraph{Individual-level analysis}
 
-% このように、モデルから得られる指標は、各個体がどの要因で振る舞いを変えているかを調べる手掛かりになる。Fig.~\ref{fig:individual_coefficients}は、異なる刺激条件 (C, S1, S2, S3) における、各個体 Attraction (coordinated) 成分、Stimulus (stimulation) 成分、自律 (autonomous) 成分の各係数の時間平均を個体ごとにプロットしている。そのままの値は速度依存のため、各時刻で各個体の各成分の和が1になるように正規化した値を用いている。これにより、各個体がどの要因に依存して行動しているかを比較できる。なお、条件間の統計的な比較は、ボンフェローニ補正付きのDunn検定を用いて行った。アスタリスクの数が多いほどp値が小さいことを示す（'*', '**', and '***' for $p < 0.05$, $ p < 0.01$, $p < 0.005$, respectively.）。
+% このように、モデルから得られる指標は、各個体がどの要因で振る舞いを変えているかを調べる手掛かりになる。Fig.~\ref{fig:individual_coefficients}は、異なる刺激条件 (C, S1, S2, S3) における、各個体 Attraction (coordinated) 成分、Stimulus (stimulation) 成分、自律 (autonomous) 成分の各係数の時間平均を個体ごとにプロットしている。そのままの値は速度依存のため、各時刻で各個体の各成分の和が1になるように正規化した値を用いている。これにより、各個体がどの要因に依存して行動しているかを比較できる。なお、条件間の統計的な比較は、ボンフェローニ補正付きのDunn検定を用いて行った。アスタリスクの数が多いほどp値が小さいことを示す（'*', '**', and '***' for $p < 0.05$, $ p < 0.01$, $p < 0.001$, respectively.）。
 The group-level indices obtained from the model provide insight into the factors that derive each individual to change its behavior. Figure~\ref{fig:individual_coefficients} shows the time-averaged coefficients of each individual's attraction (coordination), stimulation, and autonomous components under different stimulus conditions (C, S1, S2, and S3). Because the raw values depend on the velocity magnitude, normalized ratio values were used such that the sum of the three components for each individual at each time point equals 1. This normalization enables comparison of the relative influence of each factor on individual behavior. 
-For consistency, in the no-stimulus condition (C), the stimulus term $\tilde{\bm{s}}_i = \bm{r}_i$ in Eq.~\eqref{eq:discrete_with_stimulus_model} was retained to examine baseline tendency toward the rotational direction even in the absence of external stimuli.
+For consistency, in the no-stimulus condition (C), the stimulus term $\hat{y\bm{s}}_i = \hat{\bm{r}}_i$ in Eq.~\eqref{eq:discrete_with_stimulus_model} was retained to examine baseline tendency toward the rotational direction even in the absence of external stimuli.
 % Statistical comparisons between conditions were performed using Dunn's test with Bonferroni correction. A greater number of asterisks indicates a smaller p-value.
 
 %Fig.~\ref{fig:individual_coefficients}より、条件間で協調項の大きさ大きな差がないことが分かる。一方で、刺激条件 S3 (高速回転) では、全個体が刺激成分の影響を強く受けており、刺激なし条件 (C) では自律成分の影響が相対的に大きいことが示されている。このように、個体ごとの係数の時間平均を比較することで、刺激条件による行動変化の傾向を把握できる。
